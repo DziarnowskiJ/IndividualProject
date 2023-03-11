@@ -2,6 +2,9 @@ var Vars = {
     cardHeight: 180,
     cardWidth: 112.5,
 
+    largeCardHeight: 270,
+    largeCardWidth: 225,
+
     // cardHeight: 200,
     // cardWidth: 125,
 

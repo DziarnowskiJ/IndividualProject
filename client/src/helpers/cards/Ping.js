@@ -5,7 +5,7 @@ export default class Ping extends Card {
     constructor(scene) {
         super(scene);
         this.name = "ping";
-        this.playerCardSprite = "clubs";
-        this.opponentCardSprite = "clubs";
+        this.playerCardSprite = "C8";
+        this.opponentCardSprite = "F9";
     }
 }

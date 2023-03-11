@@ -5,7 +5,7 @@ export default class Bool extends Card {
     constructor(scene) {
         super(scene);
         this.name = "bool";
-        this.playerCardSprite = "hearts";
-        this.opponentCardSprite = "hearts";
+        this.playerCardSprite = "A1";
+        this.opponentCardSprite = "B2";
     }
 }
