@@ -1,11 +1,17 @@
+const {Vars} = require('../vars.js');
+
 export default class ZoneHandler {
     constructor(scene) {
         // create drop zone for the cards
         this.renderZone = (x, y) => {
+            let dropZoneWidth = Vars.cardWidth + 20;
+            let dropZoneHeight = (Vars.cardHeight + Vars.dropZoneCardOffset * 4 + Vars.dropZoneYOffset * 2 + 10)
             // TODO: Implement more drop zones
-            let dropZone = scene.add.zone(x, y, 850, 230).setRectangleDropZone(850, 230)
+            let dropZone = scene.add.zone(x, y, dropZoneWidth, dropZoneHeight);
+            dropZone.setRectangleDropZone(dropZoneWidth, dropZoneHeight);
             dropZone.setData({
-                cards: 0
+                opponentCards: 0,
+                playerCards: 0
             })
             return dropZone;
         }

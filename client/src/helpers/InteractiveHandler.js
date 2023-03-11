@@ -1,3 +1,5 @@
+const {Vars} = require('../vars.js');
+
 export default class InteractiveHandler {
     constructor(scene) {
 
@@ -64,10 +66,12 @@ export default class InteractiveHandler {
         // drop card in drop zone 
         // (allow only when game is ready and is my turn)
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
-            if (scene.GameHandler.isMyTurn && scene.GameHandler.gameState === "Ready") {
-                gameObject.x = (dropZone.x - 350) + (dropZone.data.values.cards * 50);
-                gameObject.y = dropZone.y;
-                scene.dropZone.data.values.cards++;
+            if (scene.GameHandler.isMyTurn && 
+                scene.GameHandler.gameState === "Ready" &&
+                scene.dropZone.data.values.playerCards < 3) {
+                gameObject.x = dropZone.x;
+                gameObject.y = (dropZone.y + Vars.dropZoneYOffset) + (dropZone.data.values.playerCards * Vars.dropZoneCardOffset);
+                scene.dropZone.data.values.playerCards++;
 
                 scene.input.setDraggable(gameObject, false);
                 scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id);

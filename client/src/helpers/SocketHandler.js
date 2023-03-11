@@ -1,4 +1,5 @@
 import io from 'socket.io-client'
+const {Vars} = require('../vars.js');
 
 export default class SocketHandler {
     constructor(scene) {
@@ -16,8 +17,8 @@ export default class SocketHandler {
         scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === 'Initialising') {
-                scene.DeckHandler.dealCard(1000, 860, "cardBack", "playerCard");
-                scene.DeckHandler.dealCard(1000, 135, "cardBack", "opponentCard");
+                scene.DeckHandler.dealCard(1000, Vars.gameHeight - Vars.cardHeight/2 - 30, "cardBack", "playerCard");
+                scene.DeckHandler.dealCard(1000, Vars.cardHeight/2 + 30, "cardBack", "opponentCard");
                 scene.dealCards.setInteractive();
                 scene.dealCards.setColor('#00FFFF');
             }
@@ -31,12 +32,12 @@ export default class SocketHandler {
             if (socketId === scene.socket.id) {
                 for (let i in cards) {
                     let card = scene.GameHandler.playerHand.push(
-                        scene.DeckHandler.dealCard(120 + (i * 140), 860, cards[i], "playerCard"));
+                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight/2 - 30, cards[i], "playerCard"));
                 }
             } else {
                 for (let i in cards) {
                     let card = scene.GameHandler.opponentHand.push(
-                        scene.DeckHandler.dealCard(120 + (i * 140), 135, "cardBack", "opponentCard"));
+                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.cardHeight/2 + 30, "cardBack", "opponentCard"));
                 }
             }
         })
@@ -44,8 +45,11 @@ export default class SocketHandler {
         scene.socket.on('cardPlayed', (cardName, socketId) => {
             if (socketId !== scene.socket.id) {
                 scene.GameHandler.opponentHand.shift().destroy();
-                scene.DeckHandler.dealCard((scene.dropZone.x - 350) + (scene.dropZone.data.values.cards * 50), scene.dropZone.y, cardName, "opponentCard");
-                scene.dropZone.data.values.cards++;
+                scene.DeckHandler.dealCard(
+                    scene.dropZone.x, 
+                    (scene.dropZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * scene.dropZone.data.values.opponentCards), 
+                    cardName, "opponentCard");
+                scene.dropZone.data.values.opponentCards++;
             }
         })
     }
