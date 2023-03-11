@@ -1,3 +1,5 @@
+const {Vars} = require('../../vars.js');
+
 export default class Card {
     constructor(scene) {
         this.render = (x, y, type) => {
@@ -16,12 +18,10 @@ export default class Card {
                 "sprite": sprite
             });
 
-            // card scaling
-            if (this.name === 'cardBack') {
-                card.setScale(0.35);
-            } else {
-                card.setScale(1.5);
-            }
+            card.displayWidth = Vars.cardWidth;
+            card.displayHeight = Vars.cardHeight;
+            card.height = Vars.cardWidth;
+            card.width = Vars.cardHeight;
             
             if (type === "playerCard") {
                 scene.input.setDraggable(card);
