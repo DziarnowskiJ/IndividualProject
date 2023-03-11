@@ -17,8 +17,8 @@ export default class SocketHandler {
         scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === 'Initialising') {
-                scene.DeckHandler.dealCard(1000, Vars.gameHeight - Vars.cardHeight/2 - 30, "cardBack", "playerCard");
-                scene.DeckHandler.dealCard(1000, Vars.cardHeight/2 + 30, "cardBack", "opponentCard");
+                scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight/2 - 30, "cardBack", "playerCard").disableInteractive();
+                // scene.DeckHandler.dealCard(950, Vars.cardHeight/2 + 30, "cardBack", "opponentCard");
                 scene.dealCards.setInteractive();
                 scene.dealCards.setColor('#00FFFF');
             }
@@ -42,14 +42,15 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on('cardPlayed', (cardName, socketId) => {
+        scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName) => {
             if (socketId !== scene.socket.id) {
+                let currentZone = scene.dropZones[dropZoneName];
                 scene.GameHandler.opponentHand.shift().destroy();
                 scene.DeckHandler.dealCard(
-                    scene.dropZone.x, 
-                    (scene.dropZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * scene.dropZone.data.values.opponentCards), 
+                    currentZone.x, 
+                    ((currentZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * currentZone.data.values.opponentCards)), 
                     cardName, "opponentCard");
-                scene.dropZone.data.values.opponentCards++;
+                currentZone.data.values.opponentCards++;
             }
         })
     }

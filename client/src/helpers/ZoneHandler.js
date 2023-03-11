@@ -12,7 +12,7 @@ export default class ZoneHandler {
             dropZone.setData({
                 opponentCards: 0,
                 playerCards: 0
-            })
+            });
             return dropZone;
         }
         // create drop zone outline
