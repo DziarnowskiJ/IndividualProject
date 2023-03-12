@@ -7,6 +7,18 @@ let players = {};
 let readyCheck = 0;
 let gameState = 'Initialising';
 
+// create deck full of cards
+let fullDeck = [];
+let domains = ["A", "B", "C", "D", "E", "F"];
+for (let i = 0; i < domains.length; i++) {
+    for (let j = 1; j <= 9; j++) {
+        fullDeck.push(domains[i] + j);
+    }
+}
+// shiffle the deck
+shuffle(fullDeck);
+
+
 const io = require('socket.io')(http, {
     cors: {
         origin: 'http://localhost:8080',
@@ -14,7 +26,7 @@ const io = require('socket.io')(http, {
     }
 });
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
     console.log('User connected: ' + socket.id);
 
     players[socket.id] = {
@@ -28,22 +40,20 @@ io.on('connection', function(socket) {
         io.emit('firstTurn');
     }
 
+    // distribute cards to the player
     socket.on('dealDeck', function (socketId) {
-        // TODO: add more cards here
-        players[socketId].inDeck = shuffle(["bool", "ping"])
+        for (let i = 0; i < 27; i++) {
+            players[socketId].inDeck.push(fullDeck.shift());
+        }
         console.log(players);
 
         if (Object.keys(players) < 2) return;
-        
+
         io.emit('changeGameState', 'Initialising');
     })
 
-    socket.on('dealCards', function(socketId) {
-        for (let i = 0; i < 6; i++) {
-            // happens if player runs out of cards in his deck
-            if (players[socketId].inDeck.length == 0) {
-                players[socketId].inDeck = shuffle(["bool", "ping"])
-            }
+    socket.on('dealCards', function (socketId) {
+        for (let i = 0; i < 6; i++) {          
             // take card from the players deck and add it to his hand
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
@@ -57,12 +67,12 @@ io.on('connection', function(socket) {
         }
     });
 
-    socket.on('cardPlayed', function(cardName, socketId, dropZoneName) {
+    socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
         io.emit('changeTurn');
     })
 })
 
-http.listen(3000, function() {
+http.listen(3000, function () {
     console.log("Server started!");
 })

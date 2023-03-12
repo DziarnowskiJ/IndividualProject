@@ -30,7 +30,7 @@ export default class InteractiveHandler {
                 scene.cardPreview = scene.add.image(
                     // pointer.worldX, pointer.worldY, 
                     gameObjects[0].x, gameObjects[0].y,
-                    gameObjects[0].data.values.sprite).setScale(2);
+                    gameObjects[0].data.values.sprite).setScale(0.5);
             }
         })
 

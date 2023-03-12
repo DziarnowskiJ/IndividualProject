@@ -18,7 +18,6 @@ export default class SocketHandler {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === 'Initialising') {
                 scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight/2 - 30, "cardBack", "playerCard").disableInteractive();
-                // scene.DeckHandler.dealCard(950, Vars.cardHeight/2 + 30, "cardBack", "opponentCard");
                 scene.dealCards.setInteractive();
                 scene.dealCards.setColor('#00FFFF');
             }
@@ -30,7 +29,7 @@ export default class SocketHandler {
 
         scene.socket.on('dealCards', (socketId, cards) => {
             if (socketId === scene.socket.id) {
-                for (let i in cards) {
+                for (let i = 0; i < cards.length; i++) {
                     let card = scene.GameHandler.playerHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight/2 - 30, cards[i], "playerCard"));
                 }
