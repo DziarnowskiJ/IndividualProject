@@ -54,7 +54,7 @@ io.on('connection', function (socket) {
 
     // distribute cards from player's deck to player's hand (6 cards)
     socket.on('dealCards', function (socketId) {
-        for (let i = 0; i < 6; i++) {          
+        for (let i = 0; i < 6; i++) {
             // take card from the players deck and add it to his hand
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
@@ -71,6 +71,26 @@ io.on('connection', function (socket) {
     // card was played, it is messaged to other player and turn is changed
     socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
+
+        // print message to the server
+        if (players[socketId].isPlayerA) {
+            console.log("PlayerA played card: " + cardName);
+        } else {
+            console.log("PlayerB played card: " + cardName);
+        }
+
+        // remove played card from player's hand
+        // and replace it with new cards from player's deck
+        let oldCardIndex = players[socketId].inHand.indexOf(cardName);
+        let newCardName = players[socketId].inDeck.shift();
+        players[socketId].inHand[oldCardIndex] = newCardName;
+
+        if (newCardName !== undefined) {
+            io.emit('dealNewCard', socketId, newCardName, oldCardIndex);
+        }
+
+        // console.log(players);
+
         io.emit('changeTurn');
     })
 })
