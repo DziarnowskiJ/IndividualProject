@@ -55,6 +55,8 @@ export default class UIHandler {
             // "Waiting for other player",
             // When second one connects it changes to:
             // "Start the game!"
+            // Later it accordingly aternates between
+            // "Your turn!" and "Opponent's turn"
             scene.dealCards = scene.add.text(960, Vars.cardHeight / 2 + 15, "Waiting for other player");
             scene.dealCards.setFontSize(24);
             scene.dealCards.setFontFamily("Trebuchet MS");
