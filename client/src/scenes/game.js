@@ -17,7 +17,6 @@ export default class Game extends Phaser.Scene {
         let domains = ["A", "B", "C", "D", "E", "F"];
         for (let i = 0; i < domains.length; i++ ) {
             for (let j = 1; j <= 9; j++) {
-                console.log('src/assets/normalDeck/domain' + domains[i] + '/' + domains[i] + " (" + j + ')'+ '.png');
                 this.load.image(domains[i] + j, 'src/assets/normalDeck/domain' + domains[i] + '/' + domains[i] + " (" + j + ')'+ '.png');
             }
         }

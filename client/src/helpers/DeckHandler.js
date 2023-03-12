@@ -1,7 +1,5 @@
 import CardBack from './cards/CardBack';
-// TODO: remove those imports
-import Bool from './cards/Bool';
-import Ping from './cards/Ping';
+import CardFront from './cards/CardFront';
 
 
 export default class DeckHandler {
@@ -9,11 +7,14 @@ export default class DeckHandler {
         this.dealCard = (x, y, name, type) => {
             let cards = {
                 cardBack: new CardBack(scene),
-                // TODO: Remove those cards
-                bool: new Bool(scene),
-                ping: new Ping(scene)
+                cardFront: new CardFront(scene, name),
             }
-            let newCard = cards[name];
+            let newCard;
+            if (name === "cardBack") {
+                newCard = cards["cardBack"];
+            } else {
+                newCard = cards["cardFront"];
+            }
             return (newCard.render(x, y, type));
         }
     }
