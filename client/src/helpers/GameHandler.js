@@ -14,11 +14,26 @@ export default class GameHandler {
         this.changeTurn = () => {
             this.isMyTurn = !this.isMyTurn;
             console.log("isMyTurn = " + this.isMyTurn);
+
+            if (this.gameState === "Ready") {
+                this.updateDealCardsText();
+            }
         }
 
         this.changeGameState = (gameState) => {
             this.gameState = gameState;
             console.log("gameState = " + this.gameState)
+
+            this.updateDealCardsText();
+        }
+
+        this.updateDealCardsText = () => {
+            if (this.isMyTurn) {
+                scene.dealCards.setText("Your turn!")
+            }
+            else {
+                scene.dealCards.setText("Opponent's turn")
+            }
         }
     }
 }

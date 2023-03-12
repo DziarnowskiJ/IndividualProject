@@ -11,7 +11,6 @@ export default class InteractiveHandler {
         scene.dealCards.on('pointerdown', () => {
             scene.socket.emit('dealCards', scene.socket.id);
             scene.dealCards.disableInteractive();
-            scene.dealCards.setVisible(false);
         })
 
         scene.dealCards.on('pointerover', () => {
