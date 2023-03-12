@@ -18,6 +18,7 @@ export default class SocketHandler {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === 'Initialising') {
                 scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight/2 - 30, "cardBack", "playerCard").disableInteractive();
+                scene.dealCards.setText("Start the game!")
                 scene.dealCards.setInteractive();
                 scene.dealCards.setColor('#00FFFF');
             }

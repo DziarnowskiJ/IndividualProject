@@ -40,18 +40,19 @@ io.on('connection', function (socket) {
         io.emit('firstTurn');
     }
 
-    // distribute cards to the player
+    // distribute cards to the player's deck
     socket.on('dealDeck', function (socketId) {
         for (let i = 0; i < 27; i++) {
             players[socketId].inDeck.push(fullDeck.shift());
         }
         console.log(players);
 
-        if (Object.keys(players) < 2) return;
+        if (Object.keys(players).length < 2) return
 
         io.emit('changeGameState', 'Initialising');
     })
 
+    // distribute cards from player's deck to player's hand (6 cards)
     socket.on('dealCards', function (socketId) {
         for (let i = 0; i < 6; i++) {          
             // take card from the players deck and add it to his hand
@@ -67,6 +68,7 @@ io.on('connection', function (socket) {
         }
     });
 
+    // card was played, it is messaged to other player and turn is changed
     socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
         io.emit('changeTurn');

@@ -50,8 +50,12 @@ export default class UIHandler {
 
         // Create text for UI
         this.buidGameText = () => {
-            // Deal cards text
-            scene.dealCards = scene.add.text(960, Vars.cardHeight / 2 + 15, "Deal cards");
+            // Text that starts the game
+            // Before both of the players connect it says:
+            // "Waiting for other player",
+            // When second one connects it changes to:
+            // "Start the game!"
+            scene.dealCards = scene.add.text(960, Vars.cardHeight / 2 + 15, "Waiting for other player");
             scene.dealCards.setFontSize(24);
             scene.dealCards.setFontFamily("Trebuchet MS");
         }
