@@ -11,7 +11,7 @@ var Vars = {
     dropZoneCardOffset: 40,
     dropZoneYOffset: 125,
 
-    gameWidth: 1250,
+    gameWidth: 1300,
     gameHeight: 1050
 };
 module.exports = {Vars};

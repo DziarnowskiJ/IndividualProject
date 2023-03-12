@@ -4,6 +4,7 @@ import GameHandler from "../helpers/GameHandler"
 import InteractiveHandler from "../helpers/InteractiveHandler";
 import SocketHandler from "../helpers/SocketHandler";
 import UIHandler from "../helpers/UIHandler";
+import MarkerHandler from "../helpers/MakerHandler";
 
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -25,6 +26,7 @@ export default class Game extends Phaser.Scene {
 
     // happens WHEN the game is created
     create() {
+        this.MarkerHandler = new MarkerHandler(this);
         this.CardHandler = new CardHandler();
         this.DeckHandler = new DeckHandler(this);
         this.GameHandler = new GameHandler(this);

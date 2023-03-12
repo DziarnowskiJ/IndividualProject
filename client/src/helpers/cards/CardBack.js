@@ -1,4 +1,3 @@
-// TODO: Remove this file
 import Card from "./Card";
 
 export default class CardBack extends Card {

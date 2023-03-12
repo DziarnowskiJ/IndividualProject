@@ -74,5 +74,13 @@ export default class SocketHandler {
                 scene.GameHandler.playerHand[oldCardIndex] = undefined;
             }
         })
+
+        scene.socket.on('claimMarker', (socketId, markerId) => {
+            if (socketId !== scene.socket.id) {
+                scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "lost");
+            } else {
+                scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "won");
+            }
+        })
     }
 }

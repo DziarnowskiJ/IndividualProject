@@ -1,5 +1,4 @@
 const { Vars } = require('../vars.js');
-
 export default class InteractiveHandler {
     constructor(scene) {
 
@@ -72,7 +71,7 @@ export default class InteractiveHandler {
                 gameObject.x = dropZone.x;
                 gameObject.y = (dropZone.y + Vars.dropZoneYOffset) + (dropZone.data.values.playerCards * Vars.dropZoneCardOffset);
                 dropZone.data.values.playerCards++;
-                
+
                 scene.input.setDraggable(gameObject, false);
                 scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id, dropZone.name);
             } else {

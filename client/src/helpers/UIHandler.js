@@ -1,18 +1,28 @@
 import ZoneHandler from "./ZoneHandler";
+import MarkerHandler from "./MakerHandler";
 const { Vars } = require('../vars.js');
 
 export default class UIHandler {
     constructor(scene) {
 
         // Create drop zone
-        this.zoneHandler = new ZoneHandler(scene)
+        this.zoneHandler = new ZoneHandler(scene);
 
         // create 9 drop zones and render them on screen
         this.buildZones = () => {
             scene.dropZones = {}
             for (let i = 0; i < 9; i++) {
-                scene.dropZones["zone" + i] = this.zoneHandler.renderZone(110 + i * (Vars.cardWidth + 15), Vars.gameHeight / 2).setName("zone" + i);
+                scene.dropZones["zone" + i] = this.zoneHandler.renderZone(110 + i * (Vars.cardWidth + 25), Vars.gameHeight / 2).setName("zone" + i);
                 this.zoneHandler.renderOutline(scene.dropZones["zone" + i]);
+            }
+        }
+
+        // create 9 markers and render them 
+        this.buildMarkers = () => {
+            scene.markers = {};
+            for (let i = 0; i < 9; i++) {
+                scene.markers["marker" + i] = scene.MarkerHandler.renderMarker(48 + i * (Vars.cardWidth + 25), Vars.gameHeight / 2 - Vars.dropZoneCardOffset + 10);
+                scene.MarkerHandler.renderMarkerGraphics(scene.markers["marker" + i], "");
             }
         }
 
@@ -24,7 +34,7 @@ export default class UIHandler {
                 850,
                 Vars.cardHeight + 5); // (x-coor, y-coor, width, height)
             scene.playerHandArea.setStrokeStyle(4, 0x00FF00); // (width, color)
-            // TODO: Remove deck area
+            // TODO: Remove deck area / Show how many cards are left
             scene.playerDeckArea = scene.add.rectangle(
                 1010,
                 Vars.gameHeight - Vars.cardHeight / 2 - 30,
@@ -39,13 +49,6 @@ export default class UIHandler {
                 850,
                 Vars.cardHeight + 5); // (x-coor, y-coor, width, height)
             scene.opponentHandArea.setStrokeStyle(4, 0x00FF00); // (width, color)
-            // TODO: Remove deck area
-            // scene.opponentDeckArea = scene.add.rectangle(
-            //     950,
-            //     Vars.cardHeight / 2 + 30,
-            //     Vars.cardWidth + 5,
-            //     Vars.cardHeight + 5);
-            // scene.opponentDeckArea.setStrokeStyle(4, 0x0000FF);
         }
 
         // Create text for UI
@@ -65,6 +68,7 @@ export default class UIHandler {
         // Evokes UI building sub-functions
         this.buildUI = () => {
             this.buildZones();
+            this.buildMarkers();
             this.buildPlayerAreas();
             this.buidGameText();
         }

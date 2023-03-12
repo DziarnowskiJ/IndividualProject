@@ -18,6 +18,19 @@ for (let i = 0; i < domains.length; i++) {
 // shiffle the deck
 shuffle(fullDeck);
 
+let dropZones = {};
+for (let i = 0; i < 9; i++) {
+    dropZones["zone" + i] = {
+        playerACards: [],
+        playerBCards: []
+    }
+}
+
+let markers = {};
+for (let i = 0; i < 9; i++) {
+    markers["marker" + i] = ""
+}
+
 
 const io = require('socket.io')(http, {
     cors: {
@@ -73,11 +86,16 @@ io.on('connection', function (socket) {
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
 
         // print message to the server
+        // keep track of cards in zones on server's side
         if (players[socketId].isPlayerA) {
             console.log("PlayerA played card: " + cardName);
+            dropZones[dropZoneName].playerACards.push(cardName);
         } else {
             console.log("PlayerB played card: " + cardName);
+            dropZones[dropZoneName].playerBCards.push(cardName);
         }
+
+        console.log(dropZones);
 
         // remove played card from player's hand
         // and replace it with new cards from player's deck
@@ -92,6 +110,16 @@ io.on('connection', function (socket) {
         // console.log(players);
 
         io.emit('changeTurn');
+    })
+
+    socket.on('claimMarker', function (markerId, socketId) {
+        if (players[socketId].isPlayerA) {
+            markers[markerId] = "A"
+        } else {
+            markers[markerId] = "B"
+        }
+        console.log(markers);
+        io.emit('claimMarker', socketId, markerId);
     })
 })
 
