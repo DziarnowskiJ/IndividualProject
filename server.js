@@ -3,6 +3,8 @@ const http = require('http').createServer(server);
 const shuffle = require('shuffle-array');
 const cors = require('cors');
 
+const formationHandler = require('./serverHelpers/FormationHandler');
+
 let players = {};
 let readyCheck = 0;
 let gameState = 'Initialising';
@@ -85,17 +87,34 @@ io.on('connection', function (socket) {
     socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
 
+        let currentDropZone = dropZones[dropZoneName];
+
         // print message to the server
         // keep track of cards in zones on server's side
         if (players[socketId].isPlayerA) {
             console.log("PlayerA played card: " + cardName);
-            dropZones[dropZoneName].playerACards.push(cardName);
+            currentDropZone.playerACards.push(cardName);
         } else {
             console.log("PlayerB played card: " + cardName);
-            dropZones[dropZoneName].playerBCards.push(cardName);
+            currentDropZone.playerBCards.push(cardName);
         }
 
         console.log(dropZones);
+
+        if (currentDropZone.playerACards.length === 3 &&
+            currentDropZone.playerBCards.length === 3) {
+            let isAWinner = formationHandler.determinWinningFormation(
+                formationHandler.determineFormation(currentDropZone.playerACards),
+                formationHandler.determineFormation(currentDropZone.playerBCards)
+            );
+
+            if ((players[socketId].isPlayerA && isAWinner) ||
+                (!players[socketId].isPlayerA && !isAWinner)) {
+                io.emit('claimMarker', socketId, "marker" + dropZoneName.charAt(4), "won")
+            } else {
+                io.emit('claimMarker', socketId, "marker" + dropZoneName.charAt(4), "lost")
+            }
+        }
 
         // remove played card from player's hand
         // and replace it with new cards from player's deck
@@ -112,15 +131,17 @@ io.on('connection', function (socket) {
         io.emit('changeTurn');
     })
 
-    socket.on('claimMarker', function (markerId, socketId) {
-        if (players[socketId].isPlayerA) {
-            markers[markerId] = "A"
-        } else {
-            markers[markerId] = "B"
-        }
-        console.log(markers);
-        io.emit('claimMarker', socketId, markerId);
-    })
+    // TODO: check if this is needed 
+    // socket.on('claimMarker', function (socketId, markerId, outcome) {
+    //     if ((players[socketId].isPlayerA && outcome === "won") ||
+    //         ((players[socketId].isPlayerB && outcome === "lost"))) {
+    //         markers[markerId] = "A"
+    //     } else {
+    //         markers[markerId] = "B"
+    //     }
+    //     console.log(markers);
+    //     io.emit('claimMarker', socketId, markerId, outcome);
+    // })
 })
 
 http.listen(3000, function () {

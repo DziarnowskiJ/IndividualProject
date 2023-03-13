@@ -67,7 +67,7 @@ export default class SocketHandler {
                     ((currentZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * currentZone.data.values.opponentCards)),
                     cardName, "opponentCard");
                 currentZone.data.values.opponentCards++;
-            } 
+            }
             // player played a card
             else {
                 let oldCardIndex = scene.GameHandler.playerHand.indexOf(cardName);
@@ -75,11 +75,12 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on('claimMarker', (socketId, markerId) => {
-            if (socketId !== scene.socket.id) {
-                scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "lost");
-            } else {
+        scene.socket.on('claimMarker', (socketId, markerId, outcome) => {
+            if ((socketId === scene.socket.id && outcome === "won") ||
+                (socketId !== scene.socket.id && outcome === "lost")) {
                 scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "won");
+            } else {
+                scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "lost");
             }
         })
     }
