@@ -77,6 +77,7 @@ export default class SocketHandler {
         })
 
         scene.socket.on('claimMarker', (socketId, markerId, outcome) => {
+            scene.dropZones["zone" + markerId.charAt(6)].data.values.isClaimed = true;
             if ((socketId === scene.socket.id && outcome === "won") ||
                 (socketId !== scene.socket.id && outcome === "lost")) {
                 scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "won");

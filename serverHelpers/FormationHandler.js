@@ -90,16 +90,6 @@ var formationHandler = {
             } else if (formationA.sum < formationB.sum) {
                 isAWinning = false;
             }
-            /**
-             * //NOTE: Dependin on implementation uncomment this 
-            else {
-                if (formationA.createdFirst) {
-                    isAWinning = true;
-                } else {
-                    isAWinning = false;
-                }
-            }
-            */
         }
 
         return isAWinning

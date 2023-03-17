@@ -10,7 +10,8 @@ export default class ZoneHandler {
             dropZone.setRectangleDropZone(dropZoneWidth, dropZoneHeight);
             dropZone.setData({
                 opponentCards: 0,
-                playerCards: 0
+                playerCards: 0,
+                isClaimed: false
             });
             return dropZone;
         }

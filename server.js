@@ -1,9 +1,12 @@
+// import DropZoneHandler from './serverHelpers/DropZoneHandler';
+
 const server = require('express')();
 const http = require('http').createServer(server);
 const shuffle = require('shuffle-array');
 const cors = require('cors');
 
 const formationHandler = require('./serverHelpers/FormationHandler');
+const dropZoneHandler = require('./serverHelpers/DropZoneHandler');
 
 let players = {};
 let readyCheck = 0;
@@ -30,13 +33,7 @@ for (let i = 0; i < 9; i++) {
     }
 }
 
-let markers = {};
-for (let i = 0; i < 9; i++) {
-    markers["marker" + i] = ""
-}
-
 let cardsPlayed = [];
-
 
 const io = require('socket.io')(http, {
     cors: {
@@ -269,112 +266,25 @@ io.on('connection', function (socket) {
 
         }
 
-        // console.log(dropZones);
-
         for (let i in dropZones) {
             // console.log(i);
             // console.log(dropZones[i]);
-            if (!dropZones[i].claimed && dropZones[i].firstFinishedA !== undefined) {
 
-                let formationA;
-                let formationB;
+            let outcome = dropZoneHandler.checkZone(dropZones[i], cardsPlayed);
 
-                let cardsA = dropZones[i].playerACards;
-                let cardsB = dropZones[i].playerBCards;
-
-                // Both players finished
-                if (cardsA.length === 3 &&
-                    cardsB.length === 3) {
-
-                    formationA = formationHandler.determineFormation(cardsA);
-                    formationB = formationHandler.determineFormation(cardsB);
-
-                    if (dropZones[i].firstFinishedA) {
-                        formationA.sum += 0.5;
-                    } else {
-                        formationB.sum += 0.5;
-                    }
-
-                    let isAWinner = formationHandler.determinWinningFormation(
-                        formationA,
-                        formationB
-                    );
-
-                    if ((players[socketId].isPlayerA && isAWinner) ||
-                        (!players[socketId].isPlayerA && !isAWinner)) {
-                        io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
-                        console.log(i + " claimed by playerA\n")
-                    } else {
-                        io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
-                        console.log(i + " claimed by playerB\n")
-                    }
-
-                    console.log("\n" + "playerA's formation = " + cardsA + "\n" +
-                        "playerB's formation = " + cardsB);
-
-                    dropZones[i].claimed = true;
+            if (outcome.winner !== undefined) {
+                console.log("\n" + outcome.textA);
+                console.log(outcome.textB);
+                if ((players[socketId].isPlayerA && outcome.winner === "A") ||
+                    (!players[socketId].isPlayerA && outcome.winner === "B")) {
+                    io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
+                    console.log(i + " claimed by playerA\n")
+                } else {
+                    io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
+                    console.log(i + " claimed by playerB\n")
                 }
-                // A finished, B did NOT
-                else if (cardsA.length === 3 &&
-                    cardsB.length < 3) {
 
-                    formationA = formationHandler.determineFormation(cardsA);
-                    formationB = formationHandler.predictFormation(cardsB, cardsPlayed);
-
-                    formationA.sum += 0.5;
-
-                    let willAWin = formationHandler.determinWinningFormation(
-                        formationA,
-                        formationB
-                    )
-
-                    if (willAWin) {
-                        console.log("\n" + "playerA's formation = " + formationA.cards + "\n" +
-                        "playerB's strongest possible formation = " + formationB.cards);
-
-                        if ((players[socketId].isPlayerA && willAWin) ||
-                            (!players[socketId].isPlayerA && !willAWin)) {
-                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won");
-                            console.log(i + " claimed by playerA\n")
-                        } else {
-                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
-                            console.log(i + " claimed by playerB\n")
-                        }
-
-                        dropZones[i].claimed = true;
-                    }
-
-                }
-                // B finished, A did NOT
-                else if (cardsA.length < 3 &&
-                    cardsB.length === 3) {
-
-                    formationA = formationHandler.predictFormation(cardsA, cardsPlayed);
-                    formationB = formationHandler.determineFormation(cardsB);
-
-                    formationB.sum += 0.5;
-
-                    let willBWin = formationHandler.determinWinningFormation(
-                        formationB,
-                        formationA
-                    )
-
-                    if (willBWin) {
-                        console.log("\n" + "playerA's strongest possible formation = " + formationA.cards + "\n" +
-                        "playerB's formation = " + formationB.cards);
-
-                        if ((!players[socketId].isPlayerA && willBWin) ||
-                            (players[socketId].isPlayerA && !willBWin)) {
-                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
-                            console.log(i + " claimed by playerA\n")
-                        } else {
-                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
-                            console.log(i + " claimed by playerB\n")
-                        }
-
-                        dropZones[i].claimed = true;
-                    }
-                }
+                dropZones[i].claimed = true;
             }
         }
 
@@ -388,22 +298,8 @@ io.on('connection', function (socket) {
             io.emit('dealNewCard', socketId, newCardName, oldCardIndex);
         }
 
-        // console.log(players);
-
         io.emit('changeTurn');
     })
-
-    // TODO: check if this is needed 
-    // socket.on('claimMarker', function (socketId, markerId, outcome) {
-    //     if ((players[socketId].isPlayerA && outcome === "won") ||
-    //         ((players[socketId].isPlayerB && outcome === "lost"))) {
-    //         markers[markerId] = "A"
-    //     } else {
-    //         markers[markerId] = "B"
-    //     }
-    //     console.log(markers);
-    //     io.emit('claimMarker', socketId, markerId, outcome);
-    // })
 })
 
 http.listen(3000, function () {
