@@ -30,6 +30,7 @@ export default class SocketHandler {
 
         scene.socket.on('dealCards', (socketId, cards) => {
             if (socketId === scene.socket.id) {
+                scene.dealCards.setText("Waiting for other player!")
                 for (let i = 0; i < cards.length; i++) {
                     let card = scene.GameHandler.playerHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, cards[i], "playerCard"));

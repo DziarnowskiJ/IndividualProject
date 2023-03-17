@@ -17,14 +17,15 @@ for (let i = 0; i < domains.length; i++) {
         fullDeck.push(domains[i] + j);
     }
 }
-// shiffle the deck
-shuffle(fullDeck);
+// shuffle the deck
+// shuffle(fullDeck);
 
 let dropZones = {};
 for (let i = 0; i < 9; i++) {
     dropZones["zone" + i] = {
         playerACards: [],
         playerBCards: [],
+        firstFinishedA: undefined,
         claimed: false
     }
 }
@@ -239,7 +240,9 @@ io.on('connection', function (socket) {
 
     // card was played, it is messaged to other player and turn is changed
     socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
+
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
+
         cardsPlayed.push(cardName);
 
         let currentDropZone = dropZones[dropZoneName];
@@ -247,29 +250,131 @@ io.on('connection', function (socket) {
         // print message to the server
         // keep track of cards in zones on server's side
         if (players[socketId].isPlayerA) {
-            console.log("PlayerA played card: " + cardName);
+            console.log("PlayerA played card " + cardName + " in " + dropZoneName);
             currentDropZone.playerACards.push(cardName);
+
+            if (currentDropZone.playerACards.length === 3 &&
+                currentDropZone.playerBCards.length < 3) {
+                currentDropZone.firstFinishedA = true;
+            }
+
         } else {
-            console.log("PlayerB played card: " + cardName);
+            console.log("PlayerB played card " + cardName + " in " + dropZoneName);
             currentDropZone.playerBCards.push(cardName);
+
+            if (currentDropZone.playerACards.length < 3 &&
+                currentDropZone.playerBCards.length === 3) {
+                currentDropZone.firstFinishedA = false;
+            }
+
         }
 
-        console.log(dropZones);
+        // console.log(dropZones);
 
-        // BUG: favours playerB if isAWinner is undefined
-        // TODO: add cases where zoneLength < 3
-        if (currentDropZone.playerACards.length === 3 &&
-            currentDropZone.playerBCards.length === 3) {
-            let isAWinner = formationHandler.determinWinningFormation(
-                formationHandler.determineFormation(currentDropZone.playerACards),
-                formationHandler.determineFormation(currentDropZone.playerBCards)
-            );
+        for (let i in dropZones) {
+            // console.log(i);
+            // console.log(dropZones[i]);
+            if (!dropZones[i].claimed && dropZones[i].firstFinishedA !== undefined) {
 
-            if ((players[socketId].isPlayerA && isAWinner) ||
-                (!players[socketId].isPlayerA && !isAWinner)) {
-                io.emit('claimMarker', socketId, "marker" + dropZoneName.charAt(4), "won")
-            } else {
-                io.emit('claimMarker', socketId, "marker" + dropZoneName.charAt(4), "lost")
+                let formationA;
+                let formationB;
+
+                let cardsA = dropZones[i].playerACards;
+                let cardsB = dropZones[i].playerBCards;
+
+                // Both players finished
+                if (cardsA.length === 3 &&
+                    cardsB.length === 3) {
+
+                    formationA = formationHandler.determineFormation(cardsA);
+                    formationB = formationHandler.determineFormation(cardsB);
+
+                    if (dropZones[i].firstFinishedA) {
+                        formationA.sum += 0.5;
+                    } else {
+                        formationB.sum += 0.5;
+                    }
+
+                    let isAWinner = formationHandler.determinWinningFormation(
+                        formationA,
+                        formationB
+                    );
+
+                    if ((players[socketId].isPlayerA && isAWinner) ||
+                        (!players[socketId].isPlayerA && !isAWinner)) {
+                        io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
+                        console.log(i + " claimed by playerA\n")
+                    } else {
+                        io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
+                        console.log(i + " claimed by playerB\n")
+                    }
+
+                    console.log("\n" + "playerA's formation = " + cardsA + "\n" +
+                        "playerB's formation = " + cardsB);
+
+                    dropZones[i].claimed = true;
+                }
+                // A finished, B did NOT
+                else if (cardsA.length === 3 &&
+                    cardsB.length < 3) {
+
+                    formationA = formationHandler.determineFormation(cardsA);
+                    formationB = formationHandler.predictFormation(cardsB, cardsPlayed);
+
+                    formationA.sum += 0.5;
+
+                    let willAWin = formationHandler.determinWinningFormation(
+                        formationA,
+                        formationB
+                    )
+
+                    if (willAWin) {
+                        console.log("\n" + "playerA's formation = " + formationA.cards + "\n" +
+                        "playerB's strongest possible formation = " + formationB.cards);
+
+                        if ((players[socketId].isPlayerA && willAWin) ||
+                            (!players[socketId].isPlayerA && !willAWin)) {
+                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won");
+                            console.log(i + " claimed by playerA\n")
+                        } else {
+                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
+                            console.log(i + " claimed by playerB\n")
+                        }
+
+                        dropZones[i].claimed = true;
+                    }
+
+                }
+                // B finished, A did NOT
+                else if (cardsA.length < 3 &&
+                    cardsB.length === 3) {
+
+                    formationA = formationHandler.predictFormation(cardsA, cardsPlayed);
+                    formationB = formationHandler.determineFormation(cardsB);
+
+                    formationB.sum += 0.5;
+
+                    let willBWin = formationHandler.determinWinningFormation(
+                        formationB,
+                        formationA
+                    )
+
+                    if (willBWin) {
+                        console.log("\n" + "playerA's strongest possible formation = " + formationA.cards + "\n" +
+                        "playerB's formation = " + formationB.cards);
+
+                        if ((!players[socketId].isPlayerA && willBWin) ||
+                            (players[socketId].isPlayerA && !willBWin)) {
+                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
+                            console.log(i + " claimed by playerA\n")
+                        } else {
+                            io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
+                            console.log(i + " claimed by playerB\n")
+                        }
+
+                        dropZones[i].claimed = true;
+                    }
+                }
             }
         }
 

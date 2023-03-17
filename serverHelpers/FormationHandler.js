@@ -44,7 +44,8 @@ var formationHandler = {
         let formation = {
             type: 0,
             sum: 0,
-            value: 1
+            value: 1,
+            cards: cards
         }
 
         for (let i in cards) {
@@ -54,12 +55,13 @@ var formationHandler = {
 
         let isStraight = straightValues.includes(formation.value);
         let isTriple = tripleValues.includes(formation.value);
-        let isColor = (cards[0].charAt(0) === cards[1].charAt(0) && cards[0].charAt(0) === cards[2].charAt(0))
+        let isColor = (encode(cards[0]).domain === encode(cards[1]).domain
+            && encode(cards[0]).domain === encode(cards[2]).domain)
 
         // determin card formation
         if (isStraight && isColor) {                                // straight-flush (colored sequence)
             formation.type = 5;
-        } else if (isTriple) {                                     // three-of-a-kind (same value, different colors)
+        } else if (isTriple) {                                      // three-of-a-kind (same value, different colors)
             formation.type = 4;
         } else if (!isStraight && isColor) {                        // flush (same color, different values)
             formation.type = 3
@@ -104,7 +106,9 @@ var formationHandler = {
     },
 
     // isBeatable: function (checkCards) {
-    isBeatable: function (completedFormation, checkCards, cardsPlayed) {
+    predictFormation: function (checkCards, cardsPlayed) {
+        let cardsNeeded = [];
+
         if (checkCards.length === 2) {
             let cards = [
                 encode(checkCards[0]),
@@ -128,64 +132,55 @@ var formationHandler = {
                 neededTowardTriple = cards[0].trueValue;
             }
 
-            let neededCard = undefined;
-
             // straight-flush   -> first check color, then neededTowards, then if card was played
             if (isColor && neededTowardStraight.length > 0) {
                 for (let i in neededTowardStraight) {
                     if (!cardsPlayed.includes(cards[0].domain + neededTowardStraight[i])) {
-                        neededCard = cards[0].domain + neededTowardStraight[i];
-                        break;
+                        cardsNeeded.push(cards[0].domain + neededTowardStraight[i]);
+                        return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
             }
             // triple           -> if neededTowardTriple != 0, check all domains and find if one wasn't played
-            if (neededCard === undefined && neededTowardTriple !== 0) {
+            if (neededTowardTriple !== 0) {
                 for (let i in domains) {
                     if (!cardsPlayed.includes(domains[i] + neededTowardTriple)) {
-                        neededCard = domains[i] + neededTowardTriple;
-                        break;
+                        cardsNeeded.push(domains[i] + neededTowardTriple);
+                        return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
             }
             // color            -> if isColor === true, find card with highest value in color
-            if (neededCard === undefined && isColor) {
+            if (isColor) {
                 for (let i = 9; i > 0; i--) {
                     if (!cardsPlayed.includes(cards[0].domain + i)) {
-                        neededCard = cards[0].domain + i;
-                        break;
+                        cardsNeeded.push(cards[0].domain + i);
+                        return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
             }
             // straight         -> neededTowards in any color available
-            if (neededCard === undefined && neededTowardStraight.length > 0) {
+            if (neededTowardStraight.length > 0) {
                 for (let i in neededTowardStraight) {
                     for (let j in domains) {
                         if (!cardsPlayed.includes(domains[j] + neededTowardStraight[i])) {
-                            neededCard = domains[j] + neededTowardStraight[i];
-                            break;
+                            cardsNeeded.push(domains[j] + neededTowardStraight[i]);
+                            return this.determineFormation(checkCards.concat(cardsNeeded));
                         }
                     }
                 }
             }
             // card set         -> find highest value card not played (check all 10s, 9s, etc)
-            if (neededCard === undefined) {
-                for (let i = 9; i > 0; i--) {
-                    for (let j in domains) {
-                        if (!cardsPlayed.includes(domains[j] + i)) {
-                            neededCard = domains[j] + i;
-                            i = -1 // breaks outter loop
-                            break;
-                        }
+            for (let i = 9; i > 0; i--) {
+                for (let j in domains) {
+                    if (!cardsPlayed.includes(domains[j] + i)) {
+                        cardsNeeded.push(domains[j] + i);
+                        return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
             }
 
-            checkCards.push(neededCard);
-            return this.determinWinningFormation(this.determineFormation(completedFormation), this.determineFormation(checkCards))
         } else if (checkCards.length === 1) {
-            console.log("ONE CARD")
-
             cardsToStraight = {
                 1: [[3, 2]],
                 2: [[4, 3], [3, 1]],
@@ -199,8 +194,6 @@ var formationHandler = {
             }
 
             let card = encode(checkCards[0]);
-            let cardsNeeded = [];
-
 
             // - straight - flush(colored sequence)
             // get highest possible straight in color
@@ -208,9 +201,10 @@ var formationHandler = {
                 let potentialCardA = card.domain + cardsToStraight[card.trueValue][i][0];
                 let potentialCardB = card.domain + cardsToStraight[card.trueValue][i][1]
                 if (!cardsPlayed.includes(potentialCardA) &&
-                    !cardsPlayed.includes(potentialCardB))
+                    !cardsPlayed.includes(potentialCardB)) {
                     cardsNeeded = [potentialCardA, potentialCardB];
-                break;
+                    return this.determineFormation(checkCards.concat(cardsNeeded));
+                }
             }
             // - three - of - a - kind(same value, different colors)
             // check if > 4 cards of this value were played
@@ -221,8 +215,10 @@ var formationHandler = {
                         cardsNeeded.push(domains[i] + card.trueValue);
                     }
                 }
+
                 if (cardsNeeded.length >= 2) {
                     cardsNeeded = cardsNeeded.slice(0, 2);
+                    return this.determineFormation(checkCards.concat(cardsNeeded));
                 } else {
                     cardsNeeded = [];
                 }
@@ -237,6 +233,7 @@ var formationHandler = {
                 }
                 if (cardsNeeded.length >= 2) {
                     cardsNeeded = cardsNeeded.slice(0, 2);
+                    return this.determineFormation(checkCards.concat(cardsNeeded));
                 } else {
                     cardsNeeded = [];
                 }
@@ -257,12 +254,12 @@ var formationHandler = {
                     }
                     if (isOne !== undefined && isTwo !== undefined) {
                         cardsNeeded = [isOne, isTwo];
-                        break;
+                        return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
             }
             // - card set(random cards)
-            // fund 2 highest values of unplayed cards
+            // find 2 highest values of unplayed cards
             if (cardsNeeded.length === 0) {
                 let isOne = undefined;
                 let isTwo = undefined;
@@ -277,20 +274,15 @@ var formationHandler = {
                 }
                 if (isOne !== undefined && isTwo !== undefined) {
                     cardsNeeded = [isOne, isTwo];
+                    return this.determineFormation(checkCards.concat(cardsNeeded));
                 }
             }
 
-            checkCards = checkCards.concat(cardsNeeded);
-            console.log(checkCards);
-            return this.determinWinningFormation(this.determineFormation(completedFormation), this.determineFormation(checkCards))
         } else if (checkCards.length === 0) {
-            console.log("NO CARDS")
-
             // - straight - flush(colored sequence)
             for (let i = 9; i > 2; i--) {
                 if (checkCards.length !== 0) break;
                 for (let j in domains) {
-                    console.log("looped " + i + "domain" + j)
                     let cardA = domains[j] + i;
                     let cardB = domains[j] + (i - 1);
                     let cardC = domains[j] + (i - 2);
@@ -298,8 +290,8 @@ var formationHandler = {
                     if (!cardsPlayed.includes(cardA) &&
                         !cardsPlayed.includes(cardB) &&
                         !cardsPlayed.includes(cardC)) {
-                        checkCards = [cardA, cardB, cardC];
-                        break;
+                        cardsNeeded = [cardA, cardB, cardC];
+                        return this.determineFormation(cardsNeeded);
                     }
                 }
             }
@@ -308,14 +300,16 @@ var formationHandler = {
             // - three - of - a - kind(same value, different colors)
             for (let i = 9; i > 0; i--) {
                 if (checkCards.length === 3) break;
-                let tripleCandidate = []
                 for (let j in domains) {
                     if (!cardsPlayed.includes(domains[j] + i)) {
-                        tripleCandidate.push(domains[j] + i);
+                        cardsNeeded.push(domains[j] + i);
                     }
-                    if (tripleCandidate.length === 3) {
-                        checkCards = tripleCandidate;
-                        break;
+
+                    if (cardsNeeded.length === 3) {
+                        cardsNeeded = tripleCandidate;
+                        return this.determineFormation(cardsNeeded);
+                    } else {
+                        cardsNeeded = [];
                     }
                 }
             }
@@ -341,8 +335,9 @@ var formationHandler = {
                     highestSoFar = potentialFlush;
                 }
             }
-            if (highestSoFar.cards.length === 3 && checkCards.length !== 3) {
-                checkCards = highestSoFar.cards
+            if (highestSoFar.cards.length === 3) {
+                cardsNeeded = highestSoFar.cards;
+                return this.determineFormation(cardsNeeded);
             }
 
             // - straight(sequenced values, different colors)
@@ -365,26 +360,26 @@ var formationHandler = {
                 if (cardA !== undefined &&
                     cardB !== undefined &&
                     cardC !== undefined) {
-                    checkCards = [cardA, cardB, cardC];
-                    break;
+                    cardsNeeded = [cardA, cardB, cardC];
+                    return this.determineFormation(cardsNeeded);
                 }
             }
             // - card set(random cards)
             for (let i = 9; i > 0; i--) {
-                if (checkCards.length === 3) break;
                 for (let j in domains) {
-                    if (checkCards.length === 3) break;
                     if (!cardsPlayed.includes(domains[j] + i)) {
-                        checkCards.push(domains[j] + i)
+                        cardsNeeded.push(domains[j] + i)
+                    }
+                    if (cardsNeeded.length === 3) {
+                        return this.determineFormation(cardsNeeded);
                     }
                 }
             }
 
-            console.log(checkCards);
-            return this.determinWinningFormation(this.determineFormation(completedFormation), this.determineFormation(checkCards))
         } else {
-            console.log("THIS --> " + checkCards.length)
+            console.log("THIS --> " + checkCards.length + " --> ERROR!")
         }
+
     }
 }
 
