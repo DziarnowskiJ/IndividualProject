@@ -41,8 +41,10 @@ export default class InteractiveHandler {
 
         // make dragged card's position equal to the cursor's position
         scene.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
+            if (scene.GameHandler.gameState === "Ready") {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+            }
         })
 
         // make dragged card be on top of everything and set tint to it
@@ -67,7 +69,7 @@ export default class InteractiveHandler {
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
             if (scene.GameHandler.isMyTurn &&
                 scene.GameHandler.gameState === "Ready" &&
-                dropZone.data.values.playerCards < 3 && 
+                dropZone.data.values.playerCards < 3 &&
                 !dropZone.data.values.isClaimed) {
                 gameObject.x = dropZone.x;
                 gameObject.y = (dropZone.y + Vars.dropZoneYOffset) + (dropZone.data.values.playerCards * Vars.dropZoneCardOffset);

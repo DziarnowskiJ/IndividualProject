@@ -85,5 +85,16 @@ export default class SocketHandler {
                 scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "lost");
             }
         })
+
+        scene.socket.on("gameOver", (socketId, isWinner) => {
+            if ((isWinner && scene.socket.id === socketId) ||
+                ((!isWinner && scene.socket.id !== socketId))) {
+                scene.dealCards.setText("You WON!");
+                console.log("You WON!");
+            } else {
+                scene.dealCards.setText("You LOST!");
+                console.log("You LOST!");
+            }
+        })
     }
 }

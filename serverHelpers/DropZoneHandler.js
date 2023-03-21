@@ -1,7 +1,7 @@
 const formationHandler = require('./FormationHandler');
 
 var dropZoneHandler = {
-    checkZone: function(zone, cardsPlayed) {
+    checkZone: function (zone, cardsPlayed) {
         let outcome = {
             winner: undefined,
             textA: "playerA's formation",
@@ -35,10 +35,11 @@ var dropZoneHandler = {
                 );
 
                 // evaluation
-                if (isAWinner)
-                    outcome.winner = "A"
-                else
-                    outcome.winner = "B"
+                if (isAWinner) {
+                    outcome.winner = "A";
+                } else {
+                    outcome.winner = "B";
+                }
 
                 outcome.textA += ": " + formationA.cards;
                 outcome.textB += ": " + formationB.cards;

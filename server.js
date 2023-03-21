@@ -29,7 +29,7 @@ for (let i = 0; i < 9; i++) {
         playerACards: [],
         playerBCards: [],
         firstFinishedA: undefined,
-        claimed: false
+        claimed: undefined
     }
 }
 
@@ -44,157 +44,6 @@ const io = require('socket.io')(http, {
 
 io.on('connection', function (socket) {
     console.log('User connected: ' + socket.id);
-
-    // FORMATION TESTING
-    // forms3 = [
-    //     // straight flush
-    //     ["A1", "A2", "A3"],
-    //     ["A3", "A2", "A1"],
-    //     ["A3", "A1", "A2"],
-    //     // triple
-    //     ["A4", "B4", "C4"],
-    //     ["A9", "F9", "C9"],
-    //     // color
-    //     ["A1", "A3", "A4"],
-    //     ["B2", "D2", "E2"],
-    //     // straight
-    //     ["A1", "B2", "C3"],
-    //     ["F6", "A4", "B5"],
-    //     // random
-    //     ["A1", "F8", "C2"]
-    // ]
-
-    // for (let i in forms) {
-    //     console.log(forms3[i], formationHandler.determineFormation(forms3[i]))
-    // }
-
-    // forms2 = [
-    //     // straight flush
-    //     ["A1", "A2"],
-    //     ["A3", "A2"],
-    //     ["A3", "A1"],
-    //     // triple
-    //     ["A4", "B4"],
-    //     ["A9", "F9"],
-    //     // color
-    //     ["A1", "A3"],
-    //     ["B2", "B8"],
-    //     // straight
-    //     ["A1", "B2"],
-    //     ["F6", "A4"],
-    //     // random
-    //     ["A1", "F8"],
-    //     ["B3", "C9"],
-    //     ["F6", "A2"]
-    // ]
-
-    // for (let i in forms2) {
-    //     console.log(forms2[i], formationHandler.isBeatable(["F7", "A2", "A9"], forms2[i], ['C8',
-    //         'B7',
-    //         'D8',
-    //         'C6',
-    //         'A8',
-    //         'C1',
-    //         'B1',
-    //         'D9',
-    //         'C9',
-    //         'F4',
-    //         'E2',
-    //         'A3',
-    //         'E4',
-    //         'F5',
-    //         'E5',
-    //         'C3',
-    //         'E7',
-    //         'C7',
-    //         'E6',
-    //         'D7',
-    //         'A7',
-    //         'D5',
-    //         'B3',
-    //         'F3',
-    //         'C4',
-    //         'B9',
-    //         'F7']));
-    // }
-
-    // forms1 = [
-    //     // straight flush
-    //     ["A1"],
-    //     ["A3"],
-    //     ["A3"],
-    //     // triple
-    //     ["A4"],
-    //     ["A9"],
-    //     // color
-    //     ["A1"],
-    //     ["B2"],
-    //     // straight
-    //     ["A1"],
-    //     ["F6"],
-    //     // random
-    //     ["A1"],
-    //     ["B3"],
-    //     ["F6"]
-    // ]
-
-    // for (let i in forms1) {
-    //     console.log(forms1[i], formationHandler.isBeatable(["F7", "A2", "A9"], forms1[i], ['C8',
-    //         'B7',
-    //         'D8',
-    //         'C6',
-    //         'A8',
-    //         'C1',
-    //         'B1',
-    //         'D9',
-    //         'C9',
-    //         'F4',
-    //         'E2',
-    //         'A3',
-    //         'E4',
-    //         'F5',
-    //         'E5',
-    //         'C3',
-    //         'E7',
-    //         'C7',
-    //         'E6',
-    //         'D7',
-    //         'A7',
-    //         'D5',
-    //         'B3',
-    //         'F3',
-    //         'C4',
-    //         'B9',
-    //         'F7']));
-    // }
-
-    // console.log(formationHandler.isBeatable(["F7", "A2", "A9"], [], ['C8',
-    //     'B7',
-    //     'D8',
-    //     'C6',
-    //     'A8',
-    //     'C1',
-    //     'B1',
-    //     'D9',
-    //     'C9',
-    //     'F4',
-    //     'E2',
-    //     'A3',
-    //     'E4',
-    //     'F5',
-    //     'E5',
-    //     'C3',
-    //     'E7',
-    //     'C7',
-    //     'E6',
-    //     'D7',
-    //     'A7',
-    //     'D5',
-    //     'B3',
-    //     'F3',
-    //     'C4',
-    //     'B9',
-    //     'F7']));
 
     players[socket.id] = {
         inDeck: [],
@@ -266,9 +115,13 @@ io.on('connection', function (socket) {
 
         }
 
+        let claimedByA = 0;
+        let claimedByB = 0;
+
+        let adjacentThreeA = 0;
+        let adjacentThreeB = 0;
+
         for (let i in dropZones) {
-            // console.log(i);
-            // console.log(dropZones[i]);
 
             let outcome = dropZoneHandler.checkZone(dropZones[i], cardsPlayed);
 
@@ -278,13 +131,37 @@ io.on('connection', function (socket) {
                 if ((players[socketId].isPlayerA && outcome.winner === "A") ||
                     (!players[socketId].isPlayerA && outcome.winner === "B")) {
                     io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
-                    console.log(i + " claimed by playerA\n")
                 } else {
                     io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
-                    console.log(i + " claimed by playerB\n")
                 }
 
-                dropZones[i].claimed = true;
+                console.log(i + " claimed by player" + outcome.winner + " \n");
+                dropZones[i].claimed = outcome.winner;
+            }
+
+            if (dropZones[i].claimed === "A") {
+                claimedByA++;
+                adjacentThreeA++;
+                adjacentThreeB = 0;
+            } else if (dropZones[i].claimed === "B") {
+                claimedByB++;
+                adjacentThreeB++;
+                adjacentThreeA = 0;
+            } else if (dropZones[i].claimed === undefined) {
+                adjacentThreeA = 0;
+                adjacentThreeB = 0;
+            }
+
+            if (claimedByA === 5 || adjacentThreeA === 3) {
+                console.log("playerA won the game");
+                io.emit('changeGameState', 'Over');
+                io.emit('gameOver', socketId, players[socketId].isPlayerA)
+                break;
+            } else if (claimedByB === 5 || adjacentThreeB === 3) {
+                console.log("playerB won the game");
+                io.emit('changeGameState', 'Over');
+                io.emit('gameOver', socketId, !players[socketId].isPlayerA)
+                break;
             }
         }
 
