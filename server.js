@@ -1,7 +1,12 @@
+// import DropZoneHandler from './serverHelpers/DropZoneHandler';
+
 const server = require('express')();
 const http = require('http').createServer(server);
 const shuffle = require('shuffle-array');
 const cors = require('cors');
+
+const formationHandler = require('./serverHelpers/FormationHandler');
+const dropZoneHandler = require('./serverHelpers/DropZoneHandler');
 
 let players = {};
 let readyCheck = 0;
@@ -15,22 +20,20 @@ for (let i = 0; i < domains.length; i++) {
         fullDeck.push(domains[i] + j);
     }
 }
-// shiffle the deck
-shuffle(fullDeck);
+// shuffle the deck
+// shuffle(fullDeck);
 
 let dropZones = {};
 for (let i = 0; i < 9; i++) {
     dropZones["zone" + i] = {
         playerACards: [],
-        playerBCards: []
+        playerBCards: [],
+        firstFinishedA: undefined,
+        claimed: undefined
     }
 }
 
-let markers = {};
-for (let i = 0; i < 9; i++) {
-    markers["marker" + i] = ""
-}
-
+let cardsPlayed = [];
 
 const io = require('socket.io')(http, {
     cors: {
@@ -83,19 +86,84 @@ io.on('connection', function (socket) {
 
     // card was played, it is messaged to other player and turn is changed
     socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
+
         io.emit('cardPlayed', cardName, socketId, dropZoneName);
+
+        cardsPlayed.push(cardName);
+
+        let currentDropZone = dropZones[dropZoneName];
 
         // print message to the server
         // keep track of cards in zones on server's side
         if (players[socketId].isPlayerA) {
-            console.log("PlayerA played card: " + cardName);
-            dropZones[dropZoneName].playerACards.push(cardName);
+            console.log("PlayerA played card " + cardName + " in " + dropZoneName);
+            currentDropZone.playerACards.push(cardName);
+
+            if (currentDropZone.playerACards.length === 3 &&
+                currentDropZone.playerBCards.length < 3) {
+                currentDropZone.firstFinishedA = true;
+            }
+
         } else {
-            console.log("PlayerB played card: " + cardName);
-            dropZones[dropZoneName].playerBCards.push(cardName);
+            console.log("PlayerB played card " + cardName + " in " + dropZoneName);
+            currentDropZone.playerBCards.push(cardName);
+
+            if (currentDropZone.playerACards.length < 3 &&
+                currentDropZone.playerBCards.length === 3) {
+                currentDropZone.firstFinishedA = false;
+            }
+
         }
 
-        console.log(dropZones);
+        let claimedByA = 0;
+        let claimedByB = 0;
+
+        let adjacentThreeA = 0;
+        let adjacentThreeB = 0;
+
+        for (let i in dropZones) {
+
+            let outcome = dropZoneHandler.checkZone(dropZones[i], cardsPlayed);
+
+            if (outcome.winner !== undefined) {
+                console.log("\n" + outcome.textA);
+                console.log(outcome.textB);
+                if ((players[socketId].isPlayerA && outcome.winner === "A") ||
+                    (!players[socketId].isPlayerA && outcome.winner === "B")) {
+                    io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
+                } else {
+                    io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
+                }
+
+                console.log(i + " claimed by player" + outcome.winner + " \n");
+                dropZones[i].claimed = outcome.winner;
+            }
+
+            if (dropZones[i].claimed === "A") {
+                claimedByA++;
+                adjacentThreeA++;
+                adjacentThreeB = 0;
+            } else if (dropZones[i].claimed === "B") {
+                claimedByB++;
+                adjacentThreeB++;
+                adjacentThreeA = 0;
+            } else if (dropZones[i].claimed === undefined) {
+                adjacentThreeA = 0;
+                adjacentThreeB = 0;
+            }
+
+            if (claimedByA === 5 || adjacentThreeA === 3) {
+                console.log("playerA won the game");
+                io.emit('changeGameState', 'Over');
+                io.emit('gameOver', socketId, players[socketId].isPlayerA)
+                break;
+            } else if (claimedByB === 5 || adjacentThreeB === 3) {
+                console.log("playerB won the game");
+                io.emit('changeGameState', 'Over');
+                io.emit('gameOver', socketId, !players[socketId].isPlayerA)
+                break;
+            }
+        }
 
         // remove played card from player's hand
         // and replace it with new cards from player's deck
@@ -107,19 +175,7 @@ io.on('connection', function (socket) {
             io.emit('dealNewCard', socketId, newCardName, oldCardIndex);
         }
 
-        // console.log(players);
-
         io.emit('changeTurn');
-    })
-
-    socket.on('claimMarker', function (markerId, socketId) {
-        if (players[socketId].isPlayerA) {
-            markers[markerId] = "A"
-        } else {
-            markers[markerId] = "B"
-        }
-        console.log(markers);
-        io.emit('claimMarker', socketId, markerId);
     })
 })
 

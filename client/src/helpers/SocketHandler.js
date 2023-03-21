@@ -30,6 +30,7 @@ export default class SocketHandler {
 
         scene.socket.on('dealCards', (socketId, cards) => {
             if (socketId === scene.socket.id) {
+                scene.dealCards.setText("Waiting for other player!")
                 for (let i = 0; i < cards.length; i++) {
                     let card = scene.GameHandler.playerHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, cards[i], "playerCard"));
@@ -67,7 +68,7 @@ export default class SocketHandler {
                     ((currentZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * currentZone.data.values.opponentCards)),
                     cardName, "opponentCard");
                 currentZone.data.values.opponentCards++;
-            } 
+            }
             // player played a card
             else {
                 let oldCardIndex = scene.GameHandler.playerHand.indexOf(cardName);
@@ -75,11 +76,24 @@ export default class SocketHandler {
             }
         })
 
-        scene.socket.on('claimMarker', (socketId, markerId) => {
-            if (socketId !== scene.socket.id) {
-                scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "lost");
-            } else {
+        scene.socket.on('claimMarker', (socketId, markerId, outcome) => {
+            scene.dropZones["zone" + markerId.charAt(6)].data.values.isClaimed = true;
+            if ((socketId === scene.socket.id && outcome === "won") ||
+                (socketId !== scene.socket.id && outcome === "lost")) {
                 scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "won");
+            } else {
+                scene.MarkerHandler.renderMarkerGraphics(scene.markers[markerId], "lost");
+            }
+        })
+
+        scene.socket.on("gameOver", (socketId, isWinner) => {
+            if ((isWinner && scene.socket.id === socketId) ||
+                ((!isWinner && scene.socket.id !== socketId))) {
+                scene.dealCards.setText("You WON!");
+                console.log("You WON!");
+            } else {
+                scene.dealCards.setText("You LOST!");
+                console.log("You LOST!");
             }
         })
     }
