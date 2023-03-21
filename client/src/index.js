@@ -4,6 +4,7 @@ const {Vars} = require("./vars.js");
 
 const config = {
     type: Phaser.AUTO,
+    parent: "gameContainer",
     scale: {
         mode: Phaser.Scale.FIT,
         width: Vars.gameWidth,

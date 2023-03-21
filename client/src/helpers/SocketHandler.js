@@ -6,6 +6,7 @@ export default class SocketHandler {
         scene.socket = io('http://localhost:3000');
 
         scene.socket.on('connect', () => {
+            // NOTE: client console log
             console.log("Connected!");
             scene.socket.emit('dealDeck', scene.socket.id);
         })
@@ -90,9 +91,11 @@ export default class SocketHandler {
             if ((isWinner && scene.socket.id === socketId) ||
                 ((!isWinner && scene.socket.id !== socketId))) {
                 scene.dealCards.setText("You WON!");
+                // NOTE: client console log
                 console.log("You WON!");
             } else {
                 scene.dealCards.setText("You LOST!");
+                // NOTE: client console log
                 console.log("You LOST!");
             }
         })

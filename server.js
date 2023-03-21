@@ -43,6 +43,7 @@ const io = require('socket.io')(http, {
 });
 
 io.on('connection', function (socket) {
+    // NOTE: server console log
     console.log('User connected: ' + socket.id);
 
     players[socket.id] = {
@@ -61,6 +62,7 @@ io.on('connection', function (socket) {
         for (let i = 0; i < 27; i++) {
             players[socketId].inDeck.push(fullDeck.shift());
         }
+        // NOTE: server console log
         console.log(players);
 
         if (Object.keys(players).length < 2) return
@@ -74,6 +76,7 @@ io.on('connection', function (socket) {
             // take card from the players deck and add it to his hand
             players[socketId].inHand.push(players[socketId].inDeck.shift());
         }
+        // NOTE: server console log
         console.log(players);
 
         io.emit('dealCards', socketId, players[socketId].inHand);
@@ -96,6 +99,7 @@ io.on('connection', function (socket) {
         // print message to the server
         // keep track of cards in zones on server's side
         if (players[socketId].isPlayerA) {
+            // NOTE: server console log
             console.log("PlayerA played card " + cardName + " in " + dropZoneName);
             currentDropZone.playerACards.push(cardName);
 
@@ -105,6 +109,7 @@ io.on('connection', function (socket) {
             }
 
         } else {
+            // NOTE: server console log
             console.log("PlayerB played card " + cardName + " in " + dropZoneName);
             currentDropZone.playerBCards.push(cardName);
 
@@ -126,7 +131,9 @@ io.on('connection', function (socket) {
             let outcome = dropZoneHandler.checkZone(dropZones[i], cardsPlayed);
 
             if (outcome.winner !== undefined) {
+                // NOTE: server console log
                 console.log("\n" + outcome.textA);
+                // NOTE: server console log
                 console.log(outcome.textB);
                 if ((players[socketId].isPlayerA && outcome.winner === "A") ||
                     (!players[socketId].isPlayerA && outcome.winner === "B")) {
@@ -135,6 +142,7 @@ io.on('connection', function (socket) {
                     io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
                 }
 
+                // NOTE: server console log
                 console.log(i + " claimed by player" + outcome.winner + " \n");
                 dropZones[i].claimed = outcome.winner;
             }
@@ -153,11 +161,13 @@ io.on('connection', function (socket) {
             }
 
             if (claimedByA === 5 || adjacentThreeA === 3) {
+                // NOTE: server console log
                 console.log("playerA won the game");
                 io.emit('changeGameState', 'Over');
                 io.emit('gameOver', socketId, players[socketId].isPlayerA)
                 break;
             } else if (claimedByB === 5 || adjacentThreeB === 3) {
+                // NOTE: server console log
                 console.log("playerB won the game");
                 io.emit('changeGameState', 'Over');
                 io.emit('gameOver', socketId, !players[socketId].isPlayerA)
@@ -180,5 +190,6 @@ io.on('connection', function (socket) {
 })
 
 http.listen(3000, function () {
+    // NOTE: server console log
     console.log("Server started!");
 })

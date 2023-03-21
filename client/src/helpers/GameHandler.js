@@ -13,6 +13,7 @@ export default class GameHandler {
 
         this.changeTurn = () => {
             this.isMyTurn = !this.isMyTurn;
+            // NOTE: client console log
             console.log("isMyTurn = " + this.isMyTurn);
 
             if (this.gameState === "Ready") {
@@ -22,7 +23,8 @@ export default class GameHandler {
 
         this.changeGameState = (gameState) => {
             this.gameState = gameState;
-            console.log("gameState = " + this.gameState)
+            // NOTE: client console log
+            console.log("gameState = " + this.gameState);
 
             this.updateDealCardsText();
         }
