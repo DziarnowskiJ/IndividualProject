@@ -1,5 +1,3 @@
-// import DropZoneHandler from './serverHelpers/DropZoneHandler';
-
 const server = require('express')();
 const http = require('http').createServer(server);
 const shuffle = require('shuffle-array');
