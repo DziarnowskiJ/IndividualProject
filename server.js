@@ -3,8 +3,23 @@ const http = require('http').createServer(server);
 const shuffle = require('shuffle-array');
 const cors = require('cors');
 
+// TODO: uncomment for deployment
+// const path = require('path');
+// const serveStatic = require("serve-static");
+
 const formationHandler = require('./serverHelpers/FormationHandler');
 const dropZoneHandler = require('./serverHelpers/DropZoneHandler');
+
+const io = require('socket.io')(http, {
+    cors: {
+        origin: 'http://localhost:8080',
+        methods: ["GET", "POST"]
+    }
+});
+
+// TODO: uncomment for deployment
+// server.use(cors());
+// server.use(serveStatic(__dirname + "/client/dist"));
 
 let players = {};
 let readyCheck = 0;
@@ -32,13 +47,6 @@ for (let i = 0; i < 9; i++) {
 }
 
 let cardsPlayed = [];
-
-const io = require('socket.io')(http, {
-    cors: {
-        origin: 'http://localhost:8080',
-        methods: ["GET", "POST"]
-    }
-});
 
 io.on('connection', function (socket) {
     // NOTE: server console log
@@ -187,7 +195,18 @@ io.on('connection', function (socket) {
     })
 })
 
+
+// TODO: swap for deployment
+// ---------------------------------------------
 http.listen(3000, function () {
     // NOTE: server console log
     console.log("Server started!");
 })
+
+// const port = process.env.PORT || 3000;
+
+// http.listen(port, function () {
+//     // NOTE: server console log
+//     console.log("Server started!");
+// })
+// ----------------------------------------------
