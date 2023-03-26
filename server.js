@@ -7,8 +7,7 @@ const cors = require('cors');
 // const path = require('path');
 // const serveStatic = require("serve-static");
 
-const formationHandler = require('./serverHelpers/FormationHandler');
-const dropZoneHandler = require('./serverHelpers/DropZoneHandler');
+const Room = require('./serverHelpers/Room');
 
 const io = require('socket.io')(http, {
     cors: {
@@ -22,178 +21,138 @@ const io = require('socket.io')(http, {
 // server.use(serveStatic(__dirname + "/client/dist"));
 
 let players = {};
-let readyCheck = 0;
-let gameState = 'Initialising';
+let rooms = {};
 
-// create deck full of cards
-let fullDeck = [];
-let domains = ["A", "B", "C", "D", "E", "F"];
-for (let i = 0; i < domains.length; i++) {
-    for (let j = 1; j <= 9; j++) {
-        fullDeck.push(domains[i] + j);
-    }
-}
-// shuffle the deck
-// shuffle(fullDeck);
 
-let dropZones = {};
-for (let i = 0; i < 9; i++) {
-    dropZones["zone" + i] = {
-        playerACards: [],
-        playerBCards: [],
-        firstFinishedA: undefined,
-        claimed: undefined
-    }
-}
 
-let cardsPlayed = [];
 
 io.on('connection', function (socket) {
     // NOTE: server console log
     console.log('User connected: ' + socket.id);
 
+    // keep reference of all players
     players[socket.id] = {
-        inDeck: [],
-        inHand: [],
-        isPlayerA: false
+        isPlayerA: true,
+        roomCode: null
     }
 
-    if (Object.keys(players).length < 2) {
-        players[socket.id].isPlayerA = true;
-        io.emit('firstTurn');
-    }
+    socket.on("disconnect", () => {
+        console.log("DISCONNECTED " + socket.id);
+    })
 
-    // distribute cards to the player's deck
-    socket.on('dealDeck', function (socketId) {
-        for (let i = 0; i < 27; i++) {
-            players[socketId].inDeck.push(fullDeck.shift());
+    socket.on('join-room', (roomCode) => {
+        // create new room if it does not exist
+        if (!rooms[roomCode])
+            rooms[roomCode] = new Room(roomCode);
+
+        // check if the room is not full
+        // if it is not full, player is added to the room
+        // otherwise receives info that room is full
+        if (!rooms[roomCode].addPlayer(socket.id)) {
+            io.to(socket.id).emit("roomFull");
+            return;
         }
+
+        // add player socket channel and keep reference in which room the player is
+        socket.join(roomCode);
+        players[socket.id].roomCode = roomCode;
+        players[socket.id].isPlayerA = getPlayer(socket.id).isPlayerA;
+
         // NOTE: server console log
-        console.log(players);
+        console.log("User ", socket.id, "joined room: ", roomCode);
 
-        if (Object.keys(players).length < 2) return
+        // if both players joined the room
+        if (rooms[roomCode].readyCheck === 2) {
 
-        io.emit('changeGameState', 'Initialising');
+            console.log(players);
+
+            io.sockets.in(roomCode).emit('changeGameState', 'Initialising');
+            io.sockets.in(roomCode).emit('firstTurn', socket.id);
+        }
     })
 
     // distribute cards from player's deck to player's hand (6 cards)
     socket.on('dealCards', function (socketId) {
-        for (let i = 0; i < 6; i++) {
-            // take card from the players deck and add it to his hand
-            players[socketId].inHand.push(players[socketId].inDeck.shift());
-        }
-        // NOTE: server console log
-        console.log(players);
+        let currentRoom = getRoomId(socketId);
 
-        io.emit('dealCards', socketId, players[socketId].inHand);
-        readyCheck++;
-        if (readyCheck >= 2) {
+        let { inHand, inDeck } = getPlayer(socketId).dealCards();
+
+        io.sockets.in(currentRoom).emit('dealCards', socketId, inHand, inDeck);
+
+        rooms[currentRoom].readyCheck++;
+
+        if (rooms[currentRoom].readyCheck === 4) {
             gameState = 'Ready';
-            io.emit('changeGameState', 'Ready');
+            io.sockets.in(currentRoom).emit('changeGameState', 'Ready');
         }
     });
 
     // card was played, it is messaged to other player and turn is changed
     socket.on('cardPlayed', function (cardName, socketId, dropZoneName) {
+        let currentRoom = getRoomId(socketId);
 
-        io.emit('cardPlayed', cardName, socketId, dropZoneName);
+        // let other player know that the card was played
+        io.sockets.in(currentRoom).emit('cardPlayed', cardName, socketId, dropZoneName);
 
-        cardsPlayed.push(cardName);
+        // update zone in player's room
+        rooms[currentRoom].cardPlayed(cardName, dropZoneName, getPlayer(socketId).isPlayerA);
 
-        let currentDropZone = dropZones[dropZoneName];
+        // check if any zone can be claimed
+        let claimedZones = rooms[currentRoom].checkZones();
+        for (let i in claimedZones) {
 
-        // print message to the server
-        // keep track of cards in zones on server's side
-        if (players[socketId].isPlayerA) {
             // NOTE: server console log
-            console.log("PlayerA played card " + cardName + " in " + dropZoneName);
-            currentDropZone.playerACards.push(cardName);
+            console.log("player" + claimedZones[i] + "claimed marker" + i.charAt(4));
 
-            if (currentDropZone.playerACards.length === 3 &&
-                currentDropZone.playerBCards.length < 3) {
-                currentDropZone.firstFinishedA = true;
+            if ((players[socketId].isPlayerA && claimedZones[i] === "A") ||
+                (!players[socketId].isPlayerA && claimedZones[i] === "B")) {
+                io.sockets.in(currentRoom).emit('claimMarker', socketId, "marker" + i.charAt(4), "won");
+            } else {
+                io.sockets.in(currentRoom).emit('claimMarker', socketId, "marker" + i.charAt(4), "lost");
             }
 
-        } else {
-            // NOTE: server console log
-            console.log("PlayerB played card " + cardName + " in " + dropZoneName);
-            currentDropZone.playerBCards.push(cardName);
-
-            if (currentDropZone.playerACards.length < 3 &&
-                currentDropZone.playerBCards.length === 3) {
-                currentDropZone.firstFinishedA = false;
-            }
-
-        }
-
-        let claimedByA = 0;
-        let claimedByB = 0;
-
-        let adjacentThreeA = 0;
-        let adjacentThreeB = 0;
-
-        for (let i in dropZones) {
-
-            let outcome = dropZoneHandler.checkZone(dropZones[i], cardsPlayed);
-
-            if (outcome.winner !== undefined) {
-                // NOTE: server console log
-                console.log("\n" + outcome.textA);
-                // NOTE: server console log
-                console.log(outcome.textB);
-                if ((players[socketId].isPlayerA && outcome.winner === "A") ||
-                    (!players[socketId].isPlayerA && outcome.winner === "B")) {
-                    io.emit('claimMarker', socketId, "marker" + i.charAt(4), "won")
-                } else {
-                    io.emit('claimMarker', socketId, "marker" + i.charAt(4), "lost")
-                }
-
-                // NOTE: server console log
-                console.log(i + " claimed by player" + outcome.winner + " \n");
-                dropZones[i].claimed = outcome.winner;
-            }
-
-            if (dropZones[i].claimed === "A") {
-                claimedByA++;
-                adjacentThreeA++;
-                adjacentThreeB = 0;
-            } else if (dropZones[i].claimed === "B") {
-                claimedByB++;
-                adjacentThreeB++;
-                adjacentThreeA = 0;
-            } else if (dropZones[i].claimed === undefined) {
-                adjacentThreeA = 0;
-                adjacentThreeB = 0;
-            }
-
-            if (claimedByA === 5 || adjacentThreeA === 3) {
-                // NOTE: server console log
-                console.log("playerA won the game");
-                io.emit('changeGameState', 'Over');
-                io.emit('gameOver', socketId, players[socketId].isPlayerA)
-                break;
-            } else if (claimedByB === 5 || adjacentThreeB === 3) {
-                // NOTE: server console log
-                console.log("playerB won the game");
-                io.emit('changeGameState', 'Over');
-                io.emit('gameOver', socketId, !players[socketId].isPlayerA)
-                break;
-            }
         }
 
         // remove played card from player's hand
         // and replace it with new cards from player's deck
-        let oldCardIndex = players[socketId].inHand.indexOf(cardName);
-        let newCardName = players[socketId].inDeck.shift();
-        players[socketId].inHand[oldCardIndex] = newCardName;
+        let oldCardIndex = getPlayer(socketId).inHand.indexOf(cardName);
+        let newCardName = getPlayer(socketId).inDeck.shift();
+        getPlayer(socketId).inHand[oldCardIndex] = newCardName;
 
         if (newCardName !== undefined) {
-            io.emit('dealNewCard', socketId, newCardName, oldCardIndex);
+            io.sockets.in(currentRoom).emit('dealNewCard', socketId, newCardName, oldCardIndex);
         }
 
-        io.emit('changeTurn');
+        // check if someone won the game
+        let gameWinner = rooms[currentRoom].checkWinner();
+
+        // someone won, anounce a winner
+        if (gameWinner) {
+            // NOTE: server console log
+            console.log("player" + gameWinner + " won the game");
+
+            io.sockets.in(currentRoom).emit('changeGameState', 'Over');
+
+            if (gameWinner === "A") {
+                io.sockets.in(currentRoom).emit('gameOver', socketId, players[socketId].isPlayerA);
+            } else if (gameWinner === "B") {
+                io.sockets.in(currentRoom).emit('gameOver', socketId, !players[socketId].isPlayerA);
+            }
+        }
+        // nobody won, change turn
+        else {
+            io.sockets.in(currentRoom).emit('changeTurn');
+        }
     })
 })
+
+function getPlayer(socketId) {
+    return rooms[players[socketId].roomCode].getPlayer(socketId);
+}
+
+function getRoomId(socketId) {
+    return players[socketId].roomCode
+}
 
 
 // TODO: swap for deployment
