@@ -13,6 +13,10 @@ export default class Game extends Phaser.Scene {
         })
     }
 
+    init(data) {
+        this.roomCode = data;
+    }
+
     // happens BEFORE the game is created
     preload() {
         let domains = ["A", "B", "C", "D", "E", "F"];
@@ -34,6 +38,8 @@ export default class Game extends Phaser.Scene {
         this.UIHandler = new UIHandler(this);
         this.UIHandler.buildUI();
         this.InteractiveHandler = new InteractiveHandler(this);
+        
+        // this.dealCards.setText(this.data);
     }
 
     // happens in some time interval while the game is runnning

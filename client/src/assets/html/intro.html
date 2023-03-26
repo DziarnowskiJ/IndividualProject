@@ -1,0 +1,48 @@
+<style>
+    *{
+        width: 100%;
+        height: 50%;
+    }
+
+    .buttons {
+        display: flex;
+        margin: auto;
+        width: 80%;
+        height: 100%;
+        justify-content: space-around;
+        align-items: center;
+     }
+
+    .btnContainer {
+        background-color: bisque;
+        width: 30%;
+        height: 80%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    input {
+        height: 30%;
+    }
+
+    input[type="text"] {
+        width: 90%;
+    }
+
+</style>
+
+
+<div class="buttons" style="width: 100%">
+    <!-- <div class="btnContainer" id="randomRoom">
+        <input type="submit" value="Random room" name="randomBtn">
+    </div> -->
+    <div class="btnContainer" id="createRoom">
+        <input type="submit" value="New room" name="createBtn">
+    </div>
+    <div class="btnContainer" id="joinRoom">
+        <input type="text" placeholder="Room code" id="roomCode" name="roomCode">
+        <input type="submit" value="Existing room" name="joinBtn">
+    </div>
+</div>

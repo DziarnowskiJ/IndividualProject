@@ -1,4 +1,5 @@
 import io from 'socket.io-client'
+import GameHandler from './GameHandler.js';
 const { Vars } = require('../vars.js');
 
 export default class SocketHandler {
@@ -8,12 +9,18 @@ export default class SocketHandler {
         scene.socket.on('connect', () => {
             // NOTE: client console log
             console.log("Connected!");
-            scene.socket.emit('dealDeck', scene.socket.id);
+            console.log("Joined room: ", scene.roomCode);
+            scene.socket.emit('join-room', scene.roomCode);
         })
 
-        scene.socket.on('firstTurn', () => {
-            scene.GameHandler.changeTurn();
+        scene.socket.on('firstTurn', (socketId) => {
+            if (scene.socket.id === socketId)
+                scene.GameHandler.changeTurn();
         })
+
+        scene.socket.on("roomFull", () => {
+            scene.scene.start("Intro");
+        }) 
 
         scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
@@ -29,15 +36,19 @@ export default class SocketHandler {
             scene.GameHandler.changeTurn();
         })
 
-        scene.socket.on('dealCards', (socketId, cards) => {
+        scene.socket.on('dealCards', (socketId, inHand, inDeck) => {
             if (socketId === scene.socket.id) {
-                scene.dealCards.setText("Waiting for other player!")
-                for (let i = 0; i < cards.length; i++) {
+
+                scene.GameHandler.playerDeck = inDeck;
+
+                scene.dealCards.setText("Waiting for other player!");
+
+                for (let i = 0; i < inHand.length; i++) {
                     let card = scene.GameHandler.playerHand.push(
-                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, cards[i], "playerCard"));
+                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, inHand[i], "playerCard"));
                 }
             } else {
-                for (let i in cards) {
+                for (let i in inHand) {
                     let card = scene.GameHandler.opponentHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
                 }
