@@ -1,5 +1,4 @@
 import ZoneHandler from "./ZoneHandler";
-import MarkerHandler from "./MakerHandler";
 const { Vars } = require('../vars.js');
 
 export default class UIHandler {

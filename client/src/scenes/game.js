@@ -4,7 +4,7 @@ import GameHandler from "../helpers/GameHandler"
 import InteractiveHandler from "../helpers/InteractiveHandler";
 import SocketHandler from "../helpers/SocketHandler";
 import UIHandler from "../helpers/UIHandler";
-import MarkerHandler from "../helpers/MakerHandler";
+import MarkerHandler from "../helpers/MarkerHandler";
 
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -38,8 +38,6 @@ export default class Game extends Phaser.Scene {
         this.UIHandler = new UIHandler(this);
         this.UIHandler.buildUI();
         this.InteractiveHandler = new InteractiveHandler(this);
-        
-        // this.dealCards.setText(this.data);
     }
 
     // happens in some time interval while the game is runnning
