@@ -26,9 +26,9 @@ export default class SocketHandler {
             scene.GameHandler.changeGameState(gameState);
             if (gameState === 'Initialising') {
                 scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
-                scene.dealCards.setText("Start the game!")
-                scene.dealCards.setInteractive();
-                scene.dealCards.setColor('#00FFFF');
+                scene.infoText.setText("Start the game!")
+                scene.infoText.setInteractive();
+                scene.infoText.setColor('#00FFFF');
             }
         })
 
@@ -41,7 +41,7 @@ export default class SocketHandler {
 
                 scene.GameHandler.playerDeck = inDeck;
 
-                scene.dealCards.setText("Waiting for other player!");
+                scene.infoText.setText("Waiting for other player!");
 
                 for (let i = 0; i < inHand.length; i++) {
                     let card = scene.GameHandler.playerHand.push(
@@ -105,12 +105,12 @@ export default class SocketHandler {
             }
             else if ((isWinner && scene.socket.id === socketId) ||
                 ((!isWinner && scene.socket.id !== socketId))) {
-                scene.dealCards.setText("You WON!");
+                scene.infoText.setText("You WON!");
                 // NOTE: client console log
                 console.log("You WON!");
                 scene.GameHandler.gameOver('won')
             } else {
-                scene.dealCards.setText("You LOST!");
+                scene.infoText.setText("You LOST!");
                 // NOTE: client console log
                 console.log("You LOST!");
                 scene.GameHandler.gameOver('lost')

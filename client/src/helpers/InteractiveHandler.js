@@ -7,17 +7,17 @@ export default class InteractiveHandler {
         /**
          *  DEAL CARDS BUTTON INTERACTION 
         */
-        scene.dealCards.on('pointerdown', () => {
+        scene.infoText.on('pointerdown', () => {
             scene.socket.emit('dealCards', scene.socket.id);
-            scene.dealCards.disableInteractive();
+            scene.infoText.disableInteractive();
         })
 
-        scene.dealCards.on('pointerover', () => {
-            scene.dealCards.setColor('#FF00FF');
+        scene.infoText.on('pointerover', () => {
+            scene.infoText.setColor('#FF00FF');
         })
 
-        scene.dealCards.on('pointerout', () => {
-            scene.dealCards.setColor('#00FFFF');
+        scene.infoText.on('pointerout', () => {
+            scene.infoText.setColor('#00FFFF');
         })
 
         /** 

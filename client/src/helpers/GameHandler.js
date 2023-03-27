@@ -17,7 +17,7 @@ export default class GameHandler {
             console.log("isMyTurn = " + this.isMyTurn);
 
             if (this.gameState === "Ready") {
-                this.updateDealCardsText();
+                this.updateInfoText();
             }
         }
 
@@ -26,15 +26,15 @@ export default class GameHandler {
             // NOTE: client console log
             console.log("gameState = " + this.gameState);
 
-            this.updateDealCardsText();
+            this.updateInfoText();
         }
 
-        this.updateDealCardsText = () => {
+        this.updateInfoText = () => {
             if (this.isMyTurn) {
-                scene.dealCards.setText("Your turn!")
+                scene.infoText.setText("Your turn!")
             }
             else {
-                scene.dealCards.setText("Opponent's turn")
+                scene.infoText.setText("Opponent's turn")
             }
         }
 

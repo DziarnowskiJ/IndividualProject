@@ -53,16 +53,12 @@ export default class UIHandler {
 
         // Create text for UI
         this.buidGameText = () => {
-            // Text that starts the game
-            // Before both of the players connect it says:
-            // "Waiting for other player",
-            // When second one connects it changes to:
-            // "Start the game!"
-            // Later it accordingly aternates between
-            // "Your turn!" and "Opponent's turn"
-            scene.dealCards = scene.add.text(960, Vars.cardHeight / 2 + 15, "Waiting for other player");
-            scene.dealCards.setFontSize(24);
-            scene.dealCards.setFontFamily("Trebuchet MS");
+            // Informative text
+            // First displays roomCode
+            // Later who's turn it is
+            scene.infoText = scene.add.text(960, Vars.cardHeight / 2, ("Room-code:\n" + scene.roomCode), {align: "center"});
+            scene.infoText.setFontSize(30);
+            scene.infoText.setFontFamily("Trebuchet MS");
         }
 
         // Evokes UI building sub-functions
