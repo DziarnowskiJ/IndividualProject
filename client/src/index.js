@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Game from './scenes/game.js';
 import Intro from './scenes/intro.js';
+import GameOver from './scenes/gameOver.js';
 const {Vars} = require("./vars.js");
 
 const config = {
@@ -16,7 +17,8 @@ const config = {
     },
     scene: [
         Intro,
-        Game  
+        Game,
+        GameOver, 
     ]
 };
 

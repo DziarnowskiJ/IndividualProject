@@ -98,17 +98,27 @@ export default class SocketHandler {
             }
         })
 
+        // TODO: improve parameters clarity
         scene.socket.on("gameOver", (socketId, isWinner) => {
-            if ((isWinner && scene.socket.id === socketId) ||
+            if (!socketId) {
+                scene.GameHandler.gameOver(isWinner);
+            }
+            else if ((isWinner && scene.socket.id === socketId) ||
                 ((!isWinner && scene.socket.id !== socketId))) {
                 scene.dealCards.setText("You WON!");
                 // NOTE: client console log
                 console.log("You WON!");
+                scene.GameHandler.gameOver('won')
             } else {
                 scene.dealCards.setText("You LOST!");
                 // NOTE: client console log
                 console.log("You LOST!");
+                scene.GameHandler.gameOver('lost')
             }
+        })
+
+        scene.socket.on("disconnect", () => {
+            scene.GameHandler.gameOver("serverFailure");
         })
     }
 }
