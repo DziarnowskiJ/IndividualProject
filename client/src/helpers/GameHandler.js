@@ -37,5 +37,14 @@ export default class GameHandler {
                 scene.dealCards.setText("Opponent's turn")
             }
         }
+
+        this.gameOver = (state) => {
+            // close socket
+            scene.socket.close();
+            // stop current scene (prevents problems on server's restart)
+            scene.scene.stop('Game');
+            // change scene to GameOver
+            scene.scene.start("GameOver", state);
+        }
     }
 }

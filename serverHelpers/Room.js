@@ -69,6 +69,10 @@ class Room {
         } else return false;
     }
 
+    getPlayers() {
+        return [this.playerA, this.playerB];
+    }
+
     dealDeck(player) {
         for (let i = 0; i < 27; i++) {
             player.inDeck.push(this.fullDeck.shift());

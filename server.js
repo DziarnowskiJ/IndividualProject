@@ -24,8 +24,6 @@ let players = {};
 let rooms = {};
 
 
-
-
 io.on('connection', function (socket) {
     // NOTE: server console log
     console.log('User connected: ' + socket.id);
@@ -38,6 +36,8 @@ io.on('connection', function (socket) {
 
     socket.on("disconnect", () => {
         console.log("DISCONNECTED " + socket.id);
+        io.sockets.in(getRoomId(socket.id)).emit('gameOver', null, 'disconnected');
+        cancelRoom(getRoomId(socket.id));
     })
 
     socket.on('join-room', (roomCode) => {
@@ -100,7 +100,6 @@ io.on('connection', function (socket) {
         // check if any zone can be claimed
         let claimedZones = rooms[currentRoom].checkZones();
         for (let i in claimedZones) {
-
             // NOTE: server console log
             console.log("player" + claimedZones[i] + "claimed marker" + i.charAt(4));
 
@@ -138,6 +137,8 @@ io.on('connection', function (socket) {
             } else if (gameWinner === "B") {
                 io.sockets.in(currentRoom).emit('gameOver', socketId, !players[socketId].isPlayerA);
             }
+
+            cancelRoom(getRoomId(socketId));
         }
         // nobody won, change turn
         else {
@@ -146,12 +147,38 @@ io.on('connection', function (socket) {
     })
 })
 
+function cancelRoom(roomId) {
+
+    // prevent canceling non-existing room
+    if (!rooms[roomId])
+        return
+
+    // cancel socket room by forcing all sockets from this room to leave
+    io.in(roomId).socketsLeave(roomId);
+    // remove players from players object
+    for (i of rooms[roomId].getPlayers()) {
+        if (i) {
+            delete players[i.playerId];
+        }
+    }
+
+    // remove room from rooms object
+    delete rooms[roomId];
+
+    // NOTE: server console log
+    console.log("ROOM CANCELED: ", roomId);
+    console.log("Rooms: ", rooms);
+    console.log("Players: ", players);
+}
+
 function getPlayer(socketId) {
     return rooms[players[socketId].roomCode].getPlayer(socketId);
 }
 
 function getRoomId(socketId) {
-    return players[socketId].roomCode
+    if (players[socketId])
+        return players[socketId].roomCode;
+    return null
 }
 
 
