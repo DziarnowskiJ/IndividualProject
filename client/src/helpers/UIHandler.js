@@ -32,7 +32,7 @@ export default class UIHandler {
                 850, Vars.cardHeight + 5); // (x-coor, y-coor, width, height)
             scene.playerHandArea.setStrokeStyle(4, 0x00FF00); // (width, color)
 
-            // TODO: Remove deck area / Show how many cards are left
+            // TODO: Show how many cards are left
             scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
             scene.playerDeckArea = scene.add.rectangle(
                 1010, Vars.gameHeight - Vars.cardHeight / 2 - 30,
@@ -79,6 +79,19 @@ export default class UIHandler {
             centerText(scene.copyText);
             scene.copyText.setInteractive();
             scene.copyText.setVisible(false);
+
+            // 
+            scene.cardsLeftText = scene.add.text(1100, Vars.gameHeight - Vars.cardHeight / 2 - 60, "Cards left:");
+            scene.cardsLeftText.setFontSize(24);
+            scene.cardsLeftText.setFontFamily("Trebuchet MS");
+            scene.cardsLeftText.setVisible(false);
+
+            // 
+            scene.cardsLeftNumber = scene.add.text(1100, Vars.gameHeight - Vars.cardHeight / 2, "26");
+            scene.cardsLeftNumber.setFontSize(24);
+            scene.cardsLeftNumber.setFontFamily("Trebuchet MS");
+            scene.cardsLeftNumber.setVisible(false);
+
         }
 
         // Evokes game UI building sub-functions
@@ -90,7 +103,10 @@ export default class UIHandler {
             this.toggleUIText("roomCodeText", false);
             this.toggleUIText("copyText", false);
             this.toggleUIText("randomRoomText", false);
+
             this.toggleUIText("infoText", true);
+            this.toggleUIText("cardsLeftText", true);
+            this.toggleUIText("cardsLeftNumber", true);
         }
 
         this.buildWelcomeUI = () => {
@@ -117,6 +133,12 @@ export default class UIHandler {
                     break;
                 case "copyText":
                     scene.copyText.setVisible(state);
+                    break;
+                case "cardsLeftText":
+                    scene.cardsLeftText.setVisible(state);
+                    break;
+                case "cardsLeftNumber":
+                    scene.cardsLeftNumber.setVisible(state);
                     break;
             }
         }

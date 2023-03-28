@@ -37,7 +37,6 @@ export default class SocketHandler {
         scene.socket.on('dealCards', (socketId, inHand, inDeck) => {
             if (socketId === scene.socket.id) {
 
-                // TODO: move to UI handler
                 scene.infoText.setText("Waiting for other player!");
 
                 scene.DeckHandler.playerDeck = inDeck;
@@ -47,6 +46,8 @@ export default class SocketHandler {
                     let card = scene.DeckHandler.playerHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, inHand[i], "playerCard"));
                 }
+
+                scene.cardsLeftNumber.setText(scene.DeckHandler.playerDeck.length);
             } else {
                 // render opponent's cards
                 for (let i in inHand) {
@@ -63,6 +64,7 @@ export default class SocketHandler {
                 scene.DeckHandler.playerHand[oldCardIndex] =
                     scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, "playerCard");
                 scene.DeckHandler.playerDeck.shift();
+                scene.cardsLeftNumber.setText(scene.DeckHandler.playerDeck.length);
             } else {
                 scene.DeckHandler.opponentHand.unshift(
                     scene.DeckHandler.dealCard(120, Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
