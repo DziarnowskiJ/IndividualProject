@@ -10,7 +10,7 @@ export default class SocketHandler {
             // NOTE: client console log
             console.log("Connected!");
             console.log("Joined room: ", scene.roomCode);
-            scene.socket.emit('join-room', scene.roomCode);
+            scene.socket.emit('join-room', scene.roomCode, scene.roomType);
         })
 
         scene.socket.on('firstTurn', (socketId) => {
@@ -18,9 +18,12 @@ export default class SocketHandler {
                 scene.GameHandler.changeTurn();
         })
 
-        scene.socket.on("roomFull", () => {
-            scene.scene.start("Intro");
-        }) 
+        scene.socket.on("roomError", (status) => {
+            scene.scene.stop();
+            // close socket
+            scene.socket.close();
+            scene.scene.start("RoomError", status);
+        })
 
         scene.socket.on('changeGameState', (gameState) => {
             scene.GameHandler.changeGameState(gameState);
@@ -59,14 +62,10 @@ export default class SocketHandler {
         })
 
         scene.socket.on('dealNewCard', (socketId, newCardName, oldCardIndex) => {
-            // console.log("PlayerHand:",   scene.GameHandler.playerHand);
-            // console.log("PlayerDeck:",   scene.GameHandler.playerDeck);
-            // console.log("OpponentHand:", scene.GameHandler.opponentHand);
-            // console.log("OpponentDeck:", scene.GameHandler.opponentDeck);
-
             if (socketId === scene.socket.id) {
                 scene.GameHandler.playerHand[oldCardIndex] =
                     scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, "playerCard");
+                scene.GameHandler.playerDeck.shift();
             } else {
                 scene.GameHandler.opponentHand.unshift(
                     scene.DeckHandler.dealCard(120, Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
@@ -102,12 +101,11 @@ export default class SocketHandler {
         })
 
         // TODO: improve parameters clarity
-        scene.socket.on("gameOver", (socketId, isWinner) => {
-            if (!socketId) {
-                scene.GameHandler.gameOver(isWinner);
+        scene.socket.on("gameOver", (winningSocketId) => {
+            if (!winningSocketId) {
+                scene.GameHandler.gameOver(winningSocketId);
             }
-            else if ((isWinner && scene.socket.id === socketId) ||
-                ((!isWinner && scene.socket.id !== socketId))) {
+            else if (winningSocketId === scene.socket.id) {
                 scene.infoText.setText("You WON!");
                 // NOTE: client console log
                 console.log("You WON!");

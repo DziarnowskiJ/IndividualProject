@@ -1,9 +1,9 @@
 var { Vars } = require("../vars.js")
 
-export default class GameOver extends Phaser.Scene {
+export default class RoomError extends Phaser.Scene {
     constructor() {
         super({
-            key: 'GameOver'
+            key: 'RoomError'
         })
     }
 
@@ -19,37 +19,32 @@ export default class GameOver extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
 
-        var gameOverText = this.add.text(0, 300, "GAME OVER",
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px' })
-        gameOverText.x = ((Vars.gameWidth - gameOverText.width) / 2);
-
-        var text = this.add.text(0, 500, '',
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px', align: "center" });
+        let textContent = [
+            "Sorry",
+            "",
+            "The room you are trying to join",
+        ]
 
         switch (this.status) {
-            case "disconnected":
-                text.setText("Other player disconnected!\nSorry")
+            case "noRoom":
+                textContent.push("does not exist")
                 break;
-            case "won":
-                text.setText("Congratulations, you won!")
+            case "full":
+                textContent.push("is full")
                 break;
-            case "lost":
-                text.setText("You lost! Better luck next time")
-                break;
-            case "serverFailure":
-                text.setText("Sorry, you were disconnected due to server failure")
         }
 
-        text.x = ((Vars.gameWidth - text.width) / 2);
+        var text = this.add.text(0, 300, textContent,
+            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px', align: "center" })
+            text.x = ((Vars.gameWidth - text.width) / 2);
 
         var playAgain = this.add.text(
-            0, 800, "Play Again",
+            0, 800, "Try Again",
             { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px' });
         playAgain.x = ((Vars.gameWidth - playAgain.width) / 2);
         playAgain.setInteractive();
 
         playAgain.on('pointerdown', () => {
-            this.scene.stop();
             this.scene.start('Intro');
         })
 

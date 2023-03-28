@@ -28,35 +28,42 @@ export default class Intro extends Phaser.Scene {
 
         element.addListener('click');
 
-        let data;
+        let data = {
+            roomCode: null,
+            roomType: null
+        };
 
         var createRoomDiv = Phaser.DOM.GetTarget('createRoom');
-        // var randomRoomDiv = Phaser.DOM.GetTarget('randomRoom');
+        var randomRoomDiv = Phaser.DOM.GetTarget('randomRoom');
         var joinRoomDiv = Phaser.DOM.GetTarget('joinRoom');
+
+        var roomCodeInput = Phaser.DOM.GetTarget('roomCode')
 
         element.on('click', function (event) {
             if (event.target.name === 'randomBtn') {
                 createRoomDiv.style = "background-color: bisque";
-                // randomRoomDiv.style = "background-color: red";
+                randomRoomDiv.style = "background-color: red";
                 joinRoomDiv.style = "background-color: bisque";
 
-                data = "random";
+                data.roomCode = generateString(8);
+                data.roomType = "random";
 
             } else if (event.target.name === 'createBtn') {
 
                 createRoomDiv.style = "background-color: red";
-                // randomRoomDiv.style = "background-color: bisque";
+                randomRoomDiv.style = "background-color: bisque";
                 joinRoomDiv.style = "background-color: bisque";
 
-                data = generateString(8);
+                data.roomCode = generateString(8);
+                data.roomType = "new";
 
             } else if (event.target.name === 'joinBtn') {
                 createRoomDiv.style = "background-color: bisque";
-                // randomRoomDiv.style = "background-color: bisque";
+                randomRoomDiv.style = "background-color: bisque";
                 joinRoomDiv.style = "background-color: red";
 
-                var roomCode = this.getChildByName('roomCode');
-                data = roomCode.value;
+                data.roomCode = roomCodeInput.value;
+                data.roomType = "join";
             }
 
             if (data != undefined) {
@@ -72,14 +79,15 @@ export default class Intro extends Phaser.Scene {
             ease: 'Power3'
         });
 
-
         // text.input.on('pointerup', function (pointer) {
         this.input.on('pointerup', function (pointer) {
-            console.log(this);
-            console.log(this.scene);
-            if (data != undefined)
+            if (data.roomCode && data.roomType) {
+                this.scene.stop();
                 this.scene.start('Game', data);
-
+            } else if (data.roomType === "join" && !data.roomCode) {
+                roomCodeInput.style = "border: solid 2px red;";
+                roomCodeInput.placeholder = "Enter room code!"
+            }
         }, this);
     }
 

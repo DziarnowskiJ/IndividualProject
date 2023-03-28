@@ -22,6 +22,7 @@ const io = require('socket.io')(http, {
 
 let players = {};
 let rooms = {};
+let nextRandomRoomCode = null;
 
 
 io.on('connection', function (socket) {
@@ -40,34 +41,33 @@ io.on('connection', function (socket) {
         cancelRoom(getRoomId(socket.id));
     })
 
-    socket.on('join-room', (roomCode) => {
-        // create new room if it does not exist
-        if (!rooms[roomCode])
-            rooms[roomCode] = new Room(roomCode);
+    socket.on('join-room', (roomCode, roomType) => {
 
-        // check if the room is not full
-        // if it is not full, player is added to the room
-        // otherwise receives info that room is full
-        if (!rooms[roomCode].addPlayer(socket.id)) {
-            io.to(socket.id).emit("roomFull");
-            return;
-        }
-
-        // add player socket channel and keep reference in which room the player is
-        socket.join(roomCode);
-        players[socket.id].roomCode = roomCode;
-        players[socket.id].isPlayerA = getPlayer(socket.id).isPlayerA;
-
-        // NOTE: server console log
-        console.log("User ", socket.id, "joined room: ", roomCode);
-
-        // if both players joined the room
-        if (rooms[roomCode].readyCheck === 2) {
-
-            console.log(players);
-
-            io.sockets.in(roomCode).emit('changeGameState', 'Initialising');
-            io.sockets.in(roomCode).emit('firstTurn', socket.id);
+        switch (roomType) {
+            case "new":
+                rooms[roomCode] = new Room(roomCode);
+                joinRoom(roomCode, socket);
+                break;
+            case "join":
+                if (rooms[roomCode]) {
+                    joinRoom(roomCode, socket);
+                } else {
+                    // TODO: implement
+                    console.log("ROOM DOES NOT EXIST");
+                    io.to(socket.id).emit("roomError", "noRoom");
+                }
+                break;
+            case "random":
+                if (nextRandomRoomCode) {
+                    joinRoom(nextRandomRoomCode, socket);
+                    roomCode = nextRandomRoomCode;
+                    nextRandomRoomCode = null;
+                } else {
+                    rooms[roomCode] = new Room(roomCode);
+                    joinRoom(roomCode, socket);
+                    nextRandomRoomCode = roomCode;
+                }
+                break;
         }
     })
 
@@ -118,7 +118,7 @@ io.on('connection', function (socket) {
         let newCardName = getPlayer(socketId).inDeck.shift();
         getPlayer(socketId).inHand[oldCardIndex] = newCardName;
 
-        if (newCardName !== undefined) {
+        if (newCardName) {
             io.sockets.in(currentRoom).emit('dealNewCard', socketId, newCardName, oldCardIndex);
         }
 
@@ -132,10 +132,13 @@ io.on('connection', function (socket) {
 
             io.sockets.in(currentRoom).emit('changeGameState', 'Over');
 
-            if (gameWinner === "A") {
-                io.sockets.in(currentRoom).emit('gameOver', socketId, players[socketId].isPlayerA);
-            } else if (gameWinner === "B") {
-                io.sockets.in(currentRoom).emit('gameOver', socketId, !players[socketId].isPlayerA);
+            if ((gameWinner === "A" && players[socketId].isPlayerA) ||
+                (gameWinner === "B" && !players[socketId].isPlayerA)) {
+                io.sockets.in(currentRoom).emit('gameOver', socketId);
+            }
+            else if ((gameWinner === "A" && !players[socketId].isPlayerA) ||
+                (gameWinner === "B" && players[socketId].isPlayerA)) {
+                io.sockets.in(currentRoom).emit('gameOver', socketId);
             }
 
             cancelRoom(getRoomId(socketId));
@@ -169,6 +172,35 @@ function cancelRoom(roomId) {
     console.log("ROOM CANCELED: ", roomId);
     console.log("Rooms: ", rooms);
     console.log("Players: ", players);
+}
+
+function joinRoom(roomId, socket) {
+    // add player socket channel and keep reference in which room the player is
+    socket.join(roomId);
+    players[socket.id].roomCode = roomId;
+
+    // NOTE: server console log
+    console.log("User ", socket.id, "joined room: ", roomId);
+
+    // check if the room is not full
+    // if it is not full, player is added to the room
+    // otherwise receives info that room is full
+    if (!rooms[roomId].addPlayer(socket.id)) {
+        io.to(socket.id).emit("roomError", "full");
+        return;
+    }
+
+    players[socket.id].isPlayerA = getPlayer(socket.id).isPlayerA;
+
+
+    // if both players joined the room
+    if (rooms[roomId].readyCheck === 2) {
+
+        console.log(players);
+
+        io.sockets.in(roomId).emit('changeGameState', 'Initialising');
+        io.sockets.in(roomId).emit('firstTurn', socket.id);
+    }
 }
 
 function getPlayer(socketId) {

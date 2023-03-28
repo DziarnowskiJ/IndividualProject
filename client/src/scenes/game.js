@@ -14,7 +14,8 @@ export default class Game extends Phaser.Scene {
     }
 
     init(data) {
-        this.roomCode = data;
+        this.roomCode = data.roomCode;
+        this.roomType = data.roomType;
     }
 
     // happens BEFORE the game is created
