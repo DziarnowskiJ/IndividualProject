@@ -1,6 +1,8 @@
 import ZoneHandler from "./ZoneHandler";
 const { Vars } = require('../vars.js');
 
+// TODO: before other player joins put only info text with room code + copy
+// later build UI with start the game text in top rigth corner
 export default class UIHandler {
     constructor(scene) {
 

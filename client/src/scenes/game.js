@@ -41,7 +41,7 @@ export default class Game extends Phaser.Scene {
         this.InteractiveHandler = new InteractiveHandler(this);
     }
 
-    // happens in some time interval while the game is runnning
+    // happens EVERY TICK while the game is runnning
     update() {
        
     }

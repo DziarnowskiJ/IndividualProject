@@ -3,14 +3,14 @@ const { Vars } = require('../vars.js');
 export default class MarkerHandler {
     constructor(scene) {
         this.renderMarker = (x, y) => {
-            // TODO: figure out proper dimentions and spacing 
-            let markerWidth = Vars.cardWidth + 10;
-            let markerHeight = Vars.dropZoneYOffset / 2;
+            let markerWidth = Vars.markerWidth;
+            let markerHeight = Vars.markerHeight;
 
             let marker = new Phaser.Geom.Rectangle(x, y, markerWidth, markerHeight);          
 
             return marker
         }
+        
         this.renderMarkerGraphics = (marker, captured) => {
             let graphics = scene.add.graphics();
             graphics.lineStyle(2, 0xFFFFFF)

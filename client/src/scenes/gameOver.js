@@ -63,7 +63,7 @@ export default class GameOver extends Phaser.Scene {
 
     }
 
-    // happens in some time interval while the game is runnning
+    // happens EVERY TICK while the game is runnning
     update() {
 
     }

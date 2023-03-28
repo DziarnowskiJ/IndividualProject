@@ -4,6 +4,7 @@ export default class GameHandler {
         this.isMyTurn = false;
 
         // TODO: Possibly convert to one deck
+        // TODO: move to deck handler
         // altetnatively split the full deck between two players 
         // since eventually they will play the same number of cards it should not matter
         this.playerDeck = [];
@@ -29,6 +30,7 @@ export default class GameHandler {
             this.updateInfoText();
         }
 
+        // TODO: find middle point and center the text
         this.updateInfoText = () => {
             if (this.isMyTurn) {
                 scene.infoText.setText("Your turn!")
