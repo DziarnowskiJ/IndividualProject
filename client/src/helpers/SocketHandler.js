@@ -20,28 +20,12 @@ export default class SocketHandler {
         // room error occured (room does not exist or is full)
         // changes scene to RoomError and closes the socket
         scene.socket.on("roomError", (status) => {
-            // TODO: move to game handler
-
-            // close socket
-            scene.socket.close();
-            // switch scene
-            scene.scene.stop();
-            scene.scene.start("RoomError", status);
+            scene.GameHandler.handleRoomError(status);
         })
 
         // change game state
         scene.socket.on('changeGameState', (gameState) => {
-            // TODO: move to game handler
             scene.GameHandler.changeGameState(gameState);
-            if (gameState === 'Initialising') {
-                scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
-                scene.infoText.setText("Start the game!")
-                scene.infoText.setInteractive();
-                scene.infoText.setColor('#00FFFF');
-
-                // hide copyText button
-                scene.copyText.setVisible(false);
-            }
         })
 
         // changes the turn
@@ -126,21 +110,17 @@ export default class SocketHandler {
         scene.socket.on("gameOver", (socketId, isWinner) => {
             // game ended without a winner (someone disconnected)
             if (!socketId) {
-                scene.GameHandler.gameOver(null);
+                scene.GameHandler.gameOver("disconnected");
             }
             // player won
             else if ((socketId === scene.socket.id && isWinner) ||
                 (socketId !== scene.socket.id && !isWinner)) {
                 scene.GameHandler.gameOver('won')
-                // TODO: check if needed (propbably not)
-                scene.infoText.setText("You WON!");
             }
             // player lost
             else if ((socketId !== scene.socket.id && isWinner) ||
                 (socketId === scene.socket.id && !isWinner)) {
                 scene.GameHandler.gameOver('lost')
-                // TODO: check if needed (propbably not)
-                scene.infoText.setText("You LOST!");
             }
         })
 

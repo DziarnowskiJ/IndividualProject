@@ -38,7 +38,7 @@ io.on('connection', function (socket) {
     // player disconnects
     socket.on("disconnect", () => {
         // NOTE: console log
-        // console.log("Player", socket.id, "disconnected from room", getRoomId(socket.id));
+        console.log("Player", socket.id, "disconnected from room", getRoomId(socket.id));
 
         // inform other player 
         io.sockets.in(getRoomId(socket.id)).emit('gameOver', null, 'disconnected');

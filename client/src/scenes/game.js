@@ -20,12 +20,14 @@ export default class Game extends Phaser.Scene {
 
     // happens BEFORE the game is created
     preload() {
+        // load all 54 cards (6 domains, 9 cards each)
         let domains = ["A", "B", "C", "D", "E", "F"];
         for (let i = 0; i < domains.length; i++ ) {
             for (let j = 1; j <= 9; j++) {
                 this.load.image(domains[i] + j, 'src/assets/normalDeck/domain' + domains[i] + '/' + domains[i] + " (" + j + ')'+ '.png');
             }
         }
+        // load backside of card
         this.load.image('back', 'src/assets/normalDeck/backside.png');
     }
 
@@ -37,7 +39,7 @@ export default class Game extends Phaser.Scene {
         this.GameHandler = new GameHandler(this);
         this.SocketHandler = new SocketHandler(this);
         this.UIHandler = new UIHandler(this);
-        this.UIHandler.buildUI();
+        this.UIHandler.buildWelcomeUI();
         this.InteractiveHandler = new InteractiveHandler(this);
     }
 

@@ -27,7 +27,11 @@ export default class GameHandler {
             // NOTE: client console log
             console.log("gameState = " + this.gameState);
 
-            this.updateInfoText();
+            if (gameState === "Initialising")
+                scene.UIHandler.buildGameUI();
+            else if (gameState === "Ready")
+                this.updateInfoText();
+                
         }
 
         // TODO: find middle point and center the text
@@ -41,12 +45,24 @@ export default class GameHandler {
         }
 
         this.gameOver = (state) => {
+            this.changeGameScene("GameOver", state, true);
+        }
+
+        this.handleRoomError = (state) => {
+            this.changeGameScene("RoomError", state, true);
+        }
+
+        this.changeGameScene = (newScene, sceneData, closeSocket) => {
+
             // close socket
-            scene.socket.close();
-            // stop current scene (prevents problems on server's restart)
-            scene.scene.stop('Game');
-            // change scene to GameOver
-            scene.scene.start("GameOver", state);
+            if (closeSocket) {
+                scene.socket.removeAllListeners();
+                scene.socket.close();
+            }
+
+            // switch to new scene
+            scene.scene.stop();
+            scene.scene.start(newScene, sceneData);
         }
     }
 }

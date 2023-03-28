@@ -36,6 +36,7 @@ export default class UIHandler {
                 Vars.cardHeight + 5); // (x-coor, y-coor, width, height)
             scene.playerHandArea.setStrokeStyle(4, 0x00FF00); // (width, color)
             // TODO: Remove deck area / Show how many cards are left
+            scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
             scene.playerDeckArea = scene.add.rectangle(
                 1010,
                 Vars.gameHeight - Vars.cardHeight / 2 - 30,
@@ -54,25 +55,73 @@ export default class UIHandler {
 
         // Create text for UI
         this.buidGameText = () => {
-            // Informative text
-            // First displays roomCode
-            // Later who's turn it is
-            scene.infoText = scene.add.text(960, Vars.cardHeight / 2, ("Room-code:\n" + scene.roomCode), {align: "center"});
+
+            scene.infoText = scene.add.text(960, Vars.cardHeight / 2, "Start the game!", { align: "center" });
             scene.infoText.setFontSize(30);
             scene.infoText.setFontFamily("Trebuchet MS");
+            scene.infoText.setInteractive();
+            scene.infoText.setColor('#00FFFF');
+            scene.infoText.setVisible(false);
 
-            scene.copyText = scene.add.text(960, Vars.cardHeight / 2 + 70, "Click to copy code");
+
+            scene.randomRoomText = scene.add.text(0, 450, ["For now all random rooms are full", "Wait for other player to join you!"], { align: "center" })
+            scene.randomRoomText.setFontSize(36);
+            scene.randomRoomText.setFontFamily("Trebuchet MS");
+            scene.randomRoomText.x = ((Vars.gameWidth - scene.randomRoomText.width) / 2);
+            scene.randomRoomText.setVisible(false);
+
+            scene.roomCodeText = scene.add.text(0, 450, ("Room-code:\n" + scene.roomCode), { align: "center" });
+            scene.roomCodeText.setFontSize(36);
+            scene.roomCodeText.setFontFamily("Trebuchet MS");
+            scene.roomCodeText.x = ((Vars.gameWidth - scene.roomCodeText.width) / 2);
+            scene.roomCodeText.setVisible(false);
+
+
+            scene.copyText = scene.add.text(960, Vars.cardHeight / 2 + 70, "[Click to copy code]", { align: "center" });
             scene.copyText.setFontSize(20);
             scene.copyText.setFontFamily("Trebuchet MS");
             scene.copyText.setInteractive();
+            scene.copyText.setVisible(false);
         }
 
-        // Evokes UI building sub-functions
-        this.buildUI = () => {
+        // Evokes game UI building sub-functions
+        this.buildGameUI = () => {
             this.buildZones();
             this.buildMarkers();
             this.buildPlayerAreas();
+
+            this.toggleUIText("roomCodeText", false);
+            this.toggleUIText("copyText", false);
+            this.toggleUIText("randomRoomText", false);
+            this.toggleUIText("infoText", true);
+        }
+
+        this.buildWelcomeUI = () => {
             this.buidGameText();
+
+            if (scene.roomType === "random") {
+                this.toggleUIText("randomRoomText", true);
+            } else if (scene.roomType === "new") {
+                this.toggleUIText("roomCodeText", true);
+                this.toggleUIText("copyText", true);
+            }
+        }
+
+        this.toggleUIText = (text, state) => {
+            switch (text) {
+                case "infoText":
+                    scene.infoText.setVisible(state);
+                    break;
+                case "randomRoomText":
+                    scene.randomRoomText.setVisible(state);
+                    break;
+                case "roomCodeText":
+                    scene.roomCodeText.setVisible(state);
+                    break;
+                case "copyText":
+                    scene.copyText.setVisible(state);
+                    break;
+            }
         }
     }
 }

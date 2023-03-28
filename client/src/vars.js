@@ -15,13 +15,15 @@ var Vars = {
     largeCardHeight: 270,
     largeCardWidth: 225,
 
-    /** DROPZONE OFFSETS 
+    /** DROPZONE 
      */
+    dropZoneWidth: 132.5,   // cardWidth + 20
+    dropZoneHeight: 600,    // cardHeight + dropZoneCardOffset * 4 + dropZoneYOffset * 2 + 10
     dropZoneCardOffset: 40,
     dropZoneYOffset: 125,
 
     /** MARKER */
-    markerWidth: cardWidth + 10,
-    markerHeight: dropZoneYOffset / 2,
+    markerWidth: 122.5,     // cardWidth + 10,
+    markerHeight: 62.5      // dropZoneYOffset / 2,
 };
 module.exports = {Vars};
