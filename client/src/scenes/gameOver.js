@@ -38,6 +38,7 @@ export default class GameOver extends Phaser.Scene {
                 break;
             case "serverFailure":
                 text.setText("Sorry, you were disconnected due to server failure")
+                break;
         }
 
         text.x = ((Vars.gameWidth - text.width) / 2);
@@ -63,7 +64,7 @@ export default class GameOver extends Phaser.Scene {
 
     }
 
-    // happens in some time interval while the game is runnning
+    // happens EVERY TICK while the game is runnning
     update() {
 
     }

@@ -91,7 +91,7 @@ export default class Intro extends Phaser.Scene {
         }, this);
     }
 
-    // happens in some time interval while the game is runnning
+    // happens EVERY TICK while the game is runnning
     update() {
 
     }

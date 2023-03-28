@@ -25,7 +25,7 @@ export default class InteractiveHandler {
         */
         scene.copyText.on('pointerdown', () => {
             navigator.clipboard.writeText(scene.roomCode);
-            scene.copyText.setText("Code copied!")
+            scene.UIHandler.codeCopied();
         })
 
         scene.copyText.on('pointerover', () => {
@@ -81,12 +81,14 @@ export default class InteractiveHandler {
         })
 
         // drop card in drop zone 
-        // (allow only when game is ready, is my turn, and there are no more than 3 cards in the zone)
+        // (allow only when game is ready, is my turn, and there are no more than 3 cards in the unclaimed zone)
         scene.input.on('drop', (pointer, gameObject, dropZone) => {
-            if (scene.GameHandler.isMyTurn &&
+            let canBePlayed = scene.GameHandler.isMyTurn &&
                 scene.GameHandler.gameState === "Ready" &&
                 dropZone.data.values.playerCards < 3 &&
-                !dropZone.data.values.isClaimed) {
+                !dropZone.data.values.isClaimed
+
+            if (canBePlayed) {
                 gameObject.x = dropZone.x;
                 gameObject.y = (dropZone.y + Vars.dropZoneYOffset) + (dropZone.data.values.playerCards * Vars.dropZoneCardOffset);
                 dropZone.data.values.playerCards++;

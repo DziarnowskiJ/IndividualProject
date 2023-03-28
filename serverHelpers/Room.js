@@ -81,9 +81,6 @@ class Room {
             player.inHand.push(player.inDeck.shift());
         }
 
-        // NOTE: server console log
-        // console.log(player.inDeck);
-        // console.log(player.inHand);
         return { inHand: player.inHand, inDeck: player.inDeck };
     }
 
@@ -94,16 +91,12 @@ class Room {
 
         // keep track of cards in zones on server's side
         if (playedByA) {
-            // NOTE: server console log
-            console.log("PlayerA played card " + cardName + " in " + dropZoneName);
             currentDropZone.playerACards.push(cardName);
             if (currentDropZone.playerACards.length === 3 &&
                 currentDropZone.playerBCards.length < 3) {
                 currentDropZone.firstFinishedA = true;
             }
         } else if (!playedByA) {
-            // NOTE: server console log
-            console.log("PlayerB played card " + cardName + " in " + dropZoneName);
             currentDropZone.playerBCards.push(cardName);
             if (currentDropZone.playerACards.length < 3 &&
                 currentDropZone.playerBCards.length === 3) {

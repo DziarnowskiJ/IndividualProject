@@ -4,6 +4,11 @@ import CardFront from './cards/CardFront';
 
 export default class DeckHandler {
     constructor(scene) {
+        this.playerDeck = [];
+        this.opponentDeck = [];
+        this.playerHand = [];
+        this.opponentHand = [];
+
         this.dealCard = (x, y, name, type) => {
             let cards = {
                 cardBack: new CardBack(scene),

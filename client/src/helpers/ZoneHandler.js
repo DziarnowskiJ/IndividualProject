@@ -4,8 +4,8 @@ export default class ZoneHandler {
     constructor(scene) {
         // create drop zone for the cards
         this.renderZone = (x, y) => {
-            let dropZoneWidth = Vars.cardWidth + 20;
-            let dropZoneHeight = (Vars.cardHeight + Vars.dropZoneCardOffset * 4 + Vars.dropZoneYOffset * 2 + 10)
+            let dropZoneWidth = Vars.dropZoneWidth;
+            let dropZoneHeight = Vars.dropZoneHeight;
             let dropZone = scene.add.zone(x, y, dropZoneWidth, dropZoneHeight);
             dropZone.setRectangleDropZone(dropZoneWidth, dropZoneHeight);
             dropZone.setData({

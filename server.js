@@ -27,24 +27,30 @@ let nextRandomRoomCode = null;
 
 io.on('connection', function (socket) {
     // NOTE: server console log
-    console.log('User connected: ' + socket.id);
+    console.log('User connected:', socket.id);
 
     // keep reference of all players
     players[socket.id] = {
-        isPlayerA: true,
+        isPlayerA: null,
         roomCode: null
     }
 
+    // player disconnects
     socket.on("disconnect", () => {
-        console.log("DISCONNECTED " + socket.id);
+        // NOTE: server console log
+        console.log("Player", socket.id, "disconnected from room", getRoomId(socket.id));
+
+        // inform other player 
         io.sockets.in(getRoomId(socket.id)).emit('gameOver', null, 'disconnected');
+        // cancel the room
         cancelRoom(getRoomId(socket.id));
     })
 
+    // player tries to join a room
     socket.on('join-room', (roomCode, roomType) => {
-
         switch (roomType) {
             case "new":
+                // create new room and keep instance of it
                 rooms[roomCode] = new Room(roomCode);
                 joinRoom(roomCode, socket);
                 break;
@@ -52,17 +58,21 @@ io.on('connection', function (socket) {
                 if (rooms[roomCode]) {
                     joinRoom(roomCode, socket);
                 } else {
-                    // TODO: implement
-                    console.log("ROOM DOES NOT EXIST");
+                    // NOTE: server console log
+                    console.log("Player", socket.id, "tried to join non-existing room", roomCode);
+
+                    // inform player that the room does not exist
                     io.to(socket.id).emit("roomError", "noRoom");
                 }
                 break;
             case "random":
                 if (nextRandomRoomCode) {
+                    // join open random room 
                     joinRoom(nextRandomRoomCode, socket);
                     roomCode = nextRandomRoomCode;
                     nextRandomRoomCode = null;
                 } else {
+                    // each random room is occupied, create new room and join it
                     rooms[roomCode] = new Room(roomCode);
                     joinRoom(roomCode, socket);
                     nextRandomRoomCode = roomCode;
@@ -75,12 +85,22 @@ io.on('connection', function (socket) {
     socket.on('dealCards', function (socketId) {
         let currentRoom = getRoomId(socketId);
 
+        // get player's hand and deck cards
+        // .dealCards() function assigns cards to the player on server side
         let { inHand, inDeck } = getPlayer(socketId).dealCards();
 
+        // inform player of its cards
         io.sockets.in(currentRoom).emit('dealCards', socketId, inHand, inDeck);
 
+        // increase readyCheck for player's room
+        // 0 = no players in room
+        // 1 = 1 player in room
+        // 2 = 2 players in room
+        // 3 = 2 players in room, 1 have cards
+        // 4 = 2 players in room, 2 have cards
         rooms[currentRoom].readyCheck++;
 
+        // if both players have cards start the game and inform players
         if (rooms[currentRoom].readyCheck === 4) {
             gameState = 'Ready';
             io.sockets.in(currentRoom).emit('changeGameState', 'Ready');
@@ -100,16 +120,16 @@ io.on('connection', function (socket) {
         // check if any zone can be claimed
         let claimedZones = rooms[currentRoom].checkZones();
         for (let i in claimedZones) {
-            // NOTE: server console log
-            console.log("player" + claimedZones[i] + "claimed marker" + i.charAt(4));
-
+            // player won the marker
             if ((players[socketId].isPlayerA && claimedZones[i] === "A") ||
                 (!players[socketId].isPlayerA && claimedZones[i] === "B")) {
                 io.sockets.in(currentRoom).emit('claimMarker', socketId, "marker" + i.charAt(4), "won");
-            } else {
+            }
+            // player lost the marker
+            else if ((!players[socketId].isPlayerA && claimedZones[i] === "A") ||
+                (players[socketId].isPlayerA && claimedZones[i] === "B")) {
                 io.sockets.in(currentRoom).emit('claimMarker', socketId, "marker" + i.charAt(4), "lost");
             }
-
         }
 
         // remove played card from player's hand
@@ -118,6 +138,7 @@ io.on('connection', function (socket) {
         let newCardName = getPlayer(socketId).inDeck.shift();
         getPlayer(socketId).inHand[oldCardIndex] = newCardName;
 
+        // inform player about his new card
         if (newCardName) {
             io.sockets.in(currentRoom).emit('dealNewCard', socketId, newCardName, oldCardIndex);
         }
@@ -127,20 +148,20 @@ io.on('connection', function (socket) {
 
         // someone won, anounce a winner
         if (gameWinner) {
-            // NOTE: server console log
-            console.log("player" + gameWinner + " won the game");
-
+            // finish the game
             io.sockets.in(currentRoom).emit('changeGameState', 'Over');
 
+            //  inform players who won
             if ((gameWinner === "A" && players[socketId].isPlayerA) ||
                 (gameWinner === "B" && !players[socketId].isPlayerA)) {
-                io.sockets.in(currentRoom).emit('gameOver', socketId);
+                io.sockets.in(currentRoom).emit('gameOver', socketId, "won");
             }
             else if ((gameWinner === "A" && !players[socketId].isPlayerA) ||
                 (gameWinner === "B" && players[socketId].isPlayerA)) {
-                io.sockets.in(currentRoom).emit('gameOver', socketId);
+                io.sockets.in(currentRoom).emit('gameOver', socketId, "lost");
             }
 
+            // cancel room as it is no longer needed
             cancelRoom(getRoomId(socketId));
         }
         // nobody won, change turn
@@ -150,6 +171,13 @@ io.on('connection', function (socket) {
     })
 })
 
+/** Cancel the room
+ * removes players from the room
+ * removes player's sockets from room's channel
+ * removes room's record
+ * @param {*} roomId room to be canceled
+ * @returns 
+ */
 function cancelRoom(roomId) {
 
     // prevent canceling non-existing room
@@ -167,20 +195,21 @@ function cancelRoom(roomId) {
 
     // remove room from rooms object
     delete rooms[roomId];
-
-    // NOTE: server console log
-    console.log("ROOM CANCELED: ", roomId);
-    console.log("Rooms: ", rooms);
-    console.log("Players: ", players);
 }
 
+/** Join the room
+ * Adds player to the room and allocated socket channel 
+ * @param {*} roomId room to be joined
+ * @param {*} socket socket of the player that joins the room
+ * @returns 
+ */
 function joinRoom(roomId, socket) {
     // add player socket channel and keep reference in which room the player is
     socket.join(roomId);
     players[socket.id].roomCode = roomId;
 
     // NOTE: server console log
-    console.log("User ", socket.id, "joined room: ", roomId);
+    console.log("Player", socket.id, "joined room:", roomId);
 
     // check if the room is not full
     // if it is not full, player is added to the room
@@ -203,10 +232,18 @@ function joinRoom(roomId, socket) {
     }
 }
 
+/**
+ * @param {*} socketId id of a player 
+ * @returns player object from a Room object
+ */
 function getPlayer(socketId) {
     return rooms[players[socketId].roomCode].getPlayer(socketId);
 }
 
+/**
+ * @param {*} socketId socket id of the player
+ * @returns id of a room the player is in if the player exists, null if doesn't
+ */
 function getRoomId(socketId) {
     if (players[socketId])
         return players[socketId].roomCode;
