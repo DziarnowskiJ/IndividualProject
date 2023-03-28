@@ -5,7 +5,7 @@ export default class InteractiveHandler {
         scene.cardPreview = null;
 
         /**
-         *  DEAL CARDS BUTTON INTERACTION 
+         *  INFO_TEXT INTERACTION 
         */
         scene.infoText.on('pointerdown', () => {
             scene.socket.emit('dealCards', scene.socket.id);
@@ -18,6 +18,22 @@ export default class InteractiveHandler {
 
         scene.infoText.on('pointerout', () => {
             scene.infoText.setColor('#00FFFF');
+        })
+
+        /**
+         * COPY CODE INTERACTION
+        */
+        scene.copyText.on('pointerdown', () => {
+            navigator.clipboard.writeText(scene.roomCode);
+            scene.copyText.setText("Code copied!")
+        })
+
+        scene.copyText.on('pointerover', () => {
+            scene.copyText.setColor('#FF00FF');
+        })
+
+        scene.copyText.on('pointerout', () => {
+            scene.copyText.setColor('#00FFFF');
         })
 
         /** 

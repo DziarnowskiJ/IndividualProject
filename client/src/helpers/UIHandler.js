@@ -58,6 +58,11 @@ export default class UIHandler {
             scene.infoText = scene.add.text(960, Vars.cardHeight / 2, ("Room-code:\n" + scene.roomCode), {align: "center"});
             scene.infoText.setFontSize(30);
             scene.infoText.setFontFamily("Trebuchet MS");
+
+            scene.copyText = scene.add.text(960, Vars.cardHeight / 2 + 70, "Click to copy code");
+            scene.copyText.setFontSize(20);
+            scene.copyText.setFontFamily("Trebuchet MS");
+            scene.copyText.setInteractive();
         }
 
         // Evokes UI building sub-functions

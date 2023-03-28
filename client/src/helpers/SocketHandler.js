@@ -29,6 +29,9 @@ export default class SocketHandler {
                 scene.infoText.setText("Start the game!")
                 scene.infoText.setInteractive();
                 scene.infoText.setColor('#00FFFF');
+
+                // hide copyText button
+                scene.copyText.setVisible(false);
             }
         })
 
