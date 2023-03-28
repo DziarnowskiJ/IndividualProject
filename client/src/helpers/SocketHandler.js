@@ -40,18 +40,17 @@ export default class SocketHandler {
                 // TODO: move to UI handler
                 scene.infoText.setText("Waiting for other player!");
 
-                // TODO: move to Deck handler
-                scene.GameHandler.playerDeck = inDeck;
+                scene.DeckHandler.playerDeck = inDeck;
 
                 // render player's cards
                 for (let i = 0; i < inHand.length; i++) {
-                    let card = scene.GameHandler.playerHand.push(
+                    let card = scene.DeckHandler.playerHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, inHand[i], "playerCard"));
                 }
             } else {
                 // render opponent's cards
                 for (let i in inHand) {
-                    let card = scene.GameHandler.opponentHand.push(
+                    let card = scene.DeckHandler.opponentHand.push(
                         scene.DeckHandler.dealCard(120 + (i * 140), Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
                 }
             }
@@ -61,11 +60,11 @@ export default class SocketHandler {
         scene.socket.on('dealNewCard', (socketId, newCardName, oldCardIndex) => {
             // TODO: possibly move to deck handler
             if (socketId === scene.socket.id) {
-                scene.GameHandler.playerHand[oldCardIndex] =
+                scene.DeckHandler.playerHand[oldCardIndex] =
                     scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, "playerCard");
-                scene.GameHandler.playerDeck.shift();
+                scene.DeckHandler.playerDeck.shift();
             } else {
-                scene.GameHandler.opponentHand.unshift(
+                scene.DeckHandler.opponentHand.unshift(
                     scene.DeckHandler.dealCard(120, Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
             }
         })
@@ -76,7 +75,7 @@ export default class SocketHandler {
             // opponent played a card
             if (socketId !== scene.socket.id) {
                 let currentZone = scene.dropZones[dropZoneName];
-                scene.GameHandler.opponentHand.shift().destroy();
+                scene.DeckHandler.opponentHand.shift().destroy();
                 scene.DeckHandler.dealCard(
                     currentZone.x,
                     ((currentZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * currentZone.data.values.opponentCards)),
@@ -85,8 +84,8 @@ export default class SocketHandler {
             }
             // player played a card
             else {
-                let oldCardIndex = scene.GameHandler.playerHand.indexOf(cardName);
-                scene.GameHandler.playerHand[oldCardIndex] = undefined;
+                let oldCardIndex = scene.DeckHandler.playerHand.indexOf(cardName);
+                scene.DeckHandler.playerHand[oldCardIndex] = undefined;
             }
         })
 

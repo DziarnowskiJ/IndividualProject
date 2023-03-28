@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
 
     // player disconnects
     socket.on("disconnect", () => {
-        // NOTE: console log
+        // NOTE: server console log
         console.log("Player", socket.id, "disconnected from room", getRoomId(socket.id));
 
         // inform other player 
@@ -58,8 +58,8 @@ io.on('connection', function (socket) {
                 if (rooms[roomCode]) {
                     joinRoom(roomCode, socket);
                 } else {
-                    // NOTE: console log
-                    // console.log("Player", socket.id, "tried to join non-existing room", roomCode);
+                    // NOTE: server console log
+                    console.log("Player", socket.id, "tried to join non-existing room", roomCode);
 
                     // inform player that the room does not exist
                     io.to(socket.id).emit("roomError", "noRoom");
@@ -209,7 +209,7 @@ function joinRoom(roomId, socket) {
     players[socket.id].roomCode = roomId;
 
     // NOTE: server console log
-    console.log("User ", socket.id, "joined room: ", roomId);
+    console.log("Player", socket.id, "joined room:", roomId);
 
     // check if the room is not full
     // if it is not full, player is added to the room

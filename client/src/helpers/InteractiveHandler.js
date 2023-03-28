@@ -25,7 +25,7 @@ export default class InteractiveHandler {
         */
         scene.copyText.on('pointerdown', () => {
             navigator.clipboard.writeText(scene.roomCode);
-            scene.copyText.setText("Code copied!")
+            scene.UIHandler.codeCopied();
         })
 
         scene.copyText.on('pointerover', () => {
