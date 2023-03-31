@@ -76,11 +76,10 @@ export default class UIHandler {
             scene.copyText.setVisible(false);
             scene.copyText.setInteractive();
 
-
             // text showing how many cards are left
-            scene.cardsLeftText = scene.add.text(1100, Vars.gameHeight - Vars.cardHeight / 2 - 60, "Cards left:", Vars.fontStyleMedium);
+            scene.cardsLeftText = scene.add.text(1090, Vars.gameHeight - Vars.cardHeight / 2 - 80, "Cards left\nin the deck:", Vars.fontStyleMedium);
             scene.cardsLeftText.setVisible(false);
-            scene.cardsLeftNumber = scene.add.text(1100, Vars.gameHeight - Vars.cardHeight / 2, "27", Vars.fontStyleMedium);
+            scene.cardsLeftNumber = scene.add.text(1160, Vars.gameHeight - Vars.cardHeight / 2, "27", Vars.fontStyleMedium);
             scene.cardsLeftNumber.setVisible(false);
 
         }
