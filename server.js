@@ -37,8 +37,9 @@ io.on('connection', function (socket) {
 
     // player disconnects
     socket.on("disconnect", () => {
-        // NOTE: server console log
-        console.log("Player", socket.id, "disconnected from room", getRoomId(socket.id));
+        // NOTE: server console 
+        let message = () => {if (getRoomId(socket.id)) {return "room " + getRoomId(socket.id)} else return "cancelled room"};
+        console.log("Player", socket.id, "disconnected from", message());
 
         // inform other player 
         io.sockets.in(getRoomId(socket.id)).emit('gameOver', null, 'disconnected');
@@ -66,7 +67,7 @@ io.on('connection', function (socket) {
                 }
                 break;
             case "random":
-                if (nextRandomRoomCode) {
+                if (nextRandomRoomCode && rooms[nextRandomRoomCode]) {
                     // join open random room 
                     joinRoom(nextRandomRoomCode, socket);
                     roomCode = nextRandomRoomCode;

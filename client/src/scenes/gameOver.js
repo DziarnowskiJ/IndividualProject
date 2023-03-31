@@ -19,22 +19,22 @@ export default class GameOver extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
 
-        var gameOverText = this.add.text(0, 300, "GAME OVER",
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px' })
+        var gameOverText = this.add.text(0, 300, "GAME OVER", Vars.fontStyleLarge);
         gameOverText.x = ((Vars.gameWidth - gameOverText.width) / 2);
 
-        var text = this.add.text(0, 500, '',
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px', align: "center" });
+        var text = this.add.text(0, 500, '', Vars.fontStyleLarge);
 
         switch (this.status) {
             case "disconnected":
                 text.setText("Other player disconnected!\nSorry")
                 break;
             case "won":
-                text.setText("Congratulations, you won!")
+                text.setText("Congratulations, you won!");
+                text.setColor(Vars.success);
                 break;
             case "lost":
-                text.setText("You lost! Better luck next time")
+                text.setText("You lost! Better luck next time");
+                text.setColor(Vars.danger);
                 break;
             case "serverFailure":
                 text.setText("Sorry, you were disconnected due to server failure")
@@ -43,9 +43,7 @@ export default class GameOver extends Phaser.Scene {
 
         text.x = ((Vars.gameWidth - text.width) / 2);
 
-        var playAgain = this.add.text(
-            0, 800, "Play Again",
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px' });
+        var playAgain = this.add.text(0, 800, "[Play Again]", Vars.fontStyleMedium);
         playAgain.x = ((Vars.gameWidth - playAgain.width) / 2);
         playAgain.setInteractive();
 
@@ -55,11 +53,11 @@ export default class GameOver extends Phaser.Scene {
         })
 
         playAgain.on('pointerover', () => {
-            playAgain.setColor('#FF00FF');
+            playAgain.setColor(Vars.hoverColor);
         })
 
         playAgain.on('pointerout', () => {
-            playAgain.setColor('#00FFFF');
+            playAgain.setColor(Vars.primary);
         })
 
     }

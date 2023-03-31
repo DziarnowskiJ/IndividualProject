@@ -37,7 +37,7 @@ export default class SocketHandler {
         scene.socket.on('dealCards', (socketId, inHand, inDeck) => {
             if (socketId === scene.socket.id) {
 
-                scene.infoText.setText("Waiting for other player!");
+                scene.infoText.setText("Waiting for other\nplayer!");
 
                 scene.DeckHandler.playerDeck = inDeck;
 

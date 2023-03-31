@@ -22,7 +22,7 @@ class Room {
             }
         }
         // shuffle the deck
-        // shuffle(fullDeck);
+        shuffle(this.fullDeck);
 
         // populate dropZones
         for (let i = 0; i < 9; i++) {

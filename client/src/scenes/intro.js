@@ -17,14 +17,12 @@ export default class Intro extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
 
-        var text = this.add.text(0, 800, 'Choose type of room', { color: 'white', fontFamily: 'Arial', fontSize: '32px ' });
-        text.x = ((Vars.gameWidth - text.width) / 2);
+        let joinText = this.add.text(0, 700, 'Choose type of room', Vars.fontStyleMedium);
+        joinText.x = ((Vars.gameWidth - joinText.width) / 2);
 
         var element = this.add.dom(Vars.gameWidth / 2, 600).createFromCache('introPage');
         element.setPerspective(600);
-
-        element.style = "width: 100%";
-        // element.scale
+        element.setScale(2);
 
         element.addListener('click');
 
@@ -33,42 +31,28 @@ export default class Intro extends Phaser.Scene {
             roomType: null
         };
 
-        var createRoomDiv = Phaser.DOM.GetTarget('createRoom');
-        var randomRoomDiv = Phaser.DOM.GetTarget('randomRoom');
-        var joinRoomDiv = Phaser.DOM.GetTarget('joinRoom');
-
         var roomCodeInput = Phaser.DOM.GetTarget('roomCode')
 
         element.on('click', function (event) {
-            if (event.target.name === 'randomBtn') {
-                createRoomDiv.style = "background-color: bisque";
-                randomRoomDiv.style = "background-color: red";
-                joinRoomDiv.style = "background-color: bisque";
-
+            if (event.target.id === 'randomBtn') {
                 data.roomCode = generateString(8);
                 data.roomType = "random";
-
-            } else if (event.target.name === 'createBtn') {
-
-                createRoomDiv.style = "background-color: red";
-                randomRoomDiv.style = "background-color: bisque";
-                joinRoomDiv.style = "background-color: bisque";
-
+                roomCodeInput.style.opacity = 0;
+                roomCodeInput.classList.remove("inputWarning");
+            } else if (event.target.id === 'createBtn') {
                 data.roomCode = generateString(8);
                 data.roomType = "new";
-
-            } else if (event.target.name === 'joinBtn') {
-                createRoomDiv.style = "background-color: bisque";
-                randomRoomDiv.style = "background-color: bisque";
-                joinRoomDiv.style = "background-color: red";
-
+                roomCodeInput.style.opacity = 0;
+                roomCodeInput.classList.remove("inputWarning");
+            } else if (event.target.id === 'joinBtn') {
+                roomCodeInput.style.opacity = 1;
                 data.roomCode = roomCodeInput.value;
                 data.roomType = "join";
             }
-
+            
             if (data != undefined) {
-                text.setText("Join room!").setInteractive();
-                text.x = ((Vars.gameWidth - text.width) / 2);
+                joinText.setText("[Join room!]").setInteractive();
+                joinText.x = ((Vars.gameWidth - joinText.width) / 2);
             }
         });
 
@@ -79,16 +63,30 @@ export default class Intro extends Phaser.Scene {
             ease: 'Power3'
         });
 
-        // text.input.on('pointerup', function (pointer) {
-        this.input.on('pointerup', function (pointer) {
+        joinText.on('pointerup', () => {
+            if (data.roomType === "join") {
+                let joinRoomCode = roomCodeInput.value;
+                if (joinRoomCode && joinRoomCode !== "") {
+                    data.roomCode = joinRoomCode;
+                } else {
+                    roomCodeInput.classList.add("inputWarning");
+                    roomCodeInput.placeholder = "Enter room code!";
+                }
+            }
             if (data.roomCode && data.roomType) {
                 this.scene.stop();
                 this.scene.start('Game', data);
-            } else if (data.roomType === "join" && !data.roomCode) {
-                roomCodeInput.style = "border: solid 2px red;";
-                roomCodeInput.placeholder = "Enter room code!"
             }
-        }, this);
+        })
+
+        joinText.on('pointerover', () => {
+            joinText.setColor(Vars.hoverColor);
+        })
+
+        joinText.on('pointerout', () => {
+            joinText.setColor(Vars.primary);
+        })
+
     }
 
     // happens EVERY TICK while the game is runnning

@@ -13,14 +13,14 @@ export default class MarkerHandler {
         
         this.renderMarkerGraphics = (marker, captured) => {
             let graphics = scene.add.graphics();
-            graphics.lineStyle(2, 0xFFFFFF)
+            graphics.lineStyle(0, Vars.secondary0)
 
             if (captured === "won") {
-                graphics.fillStyle(0x00FF00);
+                graphics.fillStyle(Vars.success0);
             } else if (captured === "lost") {
-                graphics.fillStyle(0xFF0000);
+                graphics.fillStyle(Vars.danger0);
             } else {
-                graphics.fillStyle(0x444444);
+                graphics.fillStyle(Vars.secondary0);
             }
 
             graphics.strokeRect(marker.x, marker.y, marker.width, marker.height);

@@ -34,26 +34,23 @@ export default class RoomError extends Phaser.Scene {
                 break;
         }
 
-        var text = this.add.text(0, 300, textContent,
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px', align: "center" })
+        var text = this.add.text(0, 300, textContent, Vars.fontStyleLarge)
             text.x = ((Vars.gameWidth - text.width) / 2);
 
-        var playAgain = this.add.text(
-            0, 800, "Try Again",
-            { color: '#00FFFF', fontFamily: 'Arial', fontSize: '32px' });
+        var playAgain = this.add.text(0, 800, "[Try Again]", Vars.fontStyleMedium);
         playAgain.x = ((Vars.gameWidth - playAgain.width) / 2);
         playAgain.setInteractive();
 
-        playAgain.on('pointerdown', () => {
+        playAgain.on('pointerup', () => {
             this.scene.start('Intro');
         })
 
         playAgain.on('pointerover', () => {
-            playAgain.setColor('#FF00FF');
+            playAgain.setColor(Vars.hoverColor);
         })
 
         playAgain.on('pointerout', () => {
-            playAgain.setColor('#00FFFF');
+            playAgain.setColor(Vars.primary);
         })
 
     }

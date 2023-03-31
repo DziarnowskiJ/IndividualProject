@@ -1,6 +1,7 @@
 export default class GameHandler {
     constructor(scene) {
         this.gameState = "Initialising";
+        this.gameOutcome = null;
         this.isMyTurn = false;        
 
         this.changeTurn = () => {

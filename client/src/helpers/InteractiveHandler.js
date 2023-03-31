@@ -13,11 +13,11 @@ export default class InteractiveHandler {
         })
 
         scene.infoText.on('pointerover', () => {
-            scene.infoText.setColor('#FF00FF');
+            scene.infoText.setColor(Vars.hoverColor);
         })
 
         scene.infoText.on('pointerout', () => {
-            scene.infoText.setColor('#00FFFF');
+            scene.infoText.setColor(Vars.primary);
         })
 
         /**
@@ -29,11 +29,11 @@ export default class InteractiveHandler {
         })
 
         scene.copyText.on('pointerover', () => {
-            scene.copyText.setColor('#FF00FF');
+            scene.copyText.setColor(Vars.hoverColor);
         })
 
         scene.copyText.on('pointerout', () => {
-            scene.copyText.setColor('#00FFFF');
+            scene.copyText.setColor(Vars.primary);
         })
 
         /** 
@@ -45,7 +45,10 @@ export default class InteractiveHandler {
                 scene.cardPreview = scene.add.image(
                     // pointer.worldX, pointer.worldY, 
                     gameObjects[0].x, gameObjects[0].y,
-                    gameObjects[0].data.values.sprite).setScale(0.5);
+                    gameObjects[0].data.values.sprite).setScale(0.9);
+            } else {
+                if (scene.cardPreview)
+                    scene.cardPreview.setVisible(false);
             }
         })
 
@@ -60,14 +63,17 @@ export default class InteractiveHandler {
             if (scene.GameHandler.gameState === "Ready") {
                 gameObject.x = dragX;
                 gameObject.y = dragY;
+                if (scene.cardPreview)
+                    scene.cardPreview.setVisible(false);
             }
         })
 
         // make dragged card be on top of everything and set tint to it
         scene.input.on('dragstart', (pointer, gameObject) => {
-            gameObject.setTint(0xff69b4);
+            gameObject.setTint(Vars.secondary0);
             scene.children.bringToTop(gameObject);
-            scene.cardPreview.setVisible(false);
+            if (scene.cardPreview)
+                scene.cardPreview.setVisible(false);
         })
 
         // finish card draging
