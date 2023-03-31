@@ -116,18 +116,23 @@ export default class SocketHandler {
             // player won
             else if ((socketId === scene.socket.id && isWinner) ||
                 (socketId !== scene.socket.id && !isWinner)) {
-                scene.GameHandler.gameOver('won')
+                scene.GameHandler.gameOutcome = "won";
             }
             // player lost
             else if ((socketId !== scene.socket.id && isWinner) ||
                 (socketId === scene.socket.id && !isWinner)) {
-                scene.GameHandler.gameOver('lost')
+                scene.GameHandler.gameOutcome = "lost";
             }
+
+            scene.infoText.setText("[Game over]");
+            scene.infoText.setInteractive();
+
         })
 
         // lost connection to the server
         scene.socket.on("disconnect", () => {
-            scene.GameHandler.gameOver("serverFailure");
+            if (!scene.GameHandler.gameOutcome)
+                scene.GameHandler.gameOver("serverFailure");
         })
     }
 }

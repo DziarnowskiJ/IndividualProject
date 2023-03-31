@@ -163,6 +163,7 @@ io.on('connection', function (socket) {
             }
 
             // cancel room as it is no longer needed
+            console.log("Game ended in room:", getRoomId(socketId));
             cancelRoom(getRoomId(socketId));
         }
         // nobody won, change turn
@@ -184,6 +185,8 @@ function cancelRoom(roomId) {
     // prevent canceling non-existing room
     if (!rooms[roomId])
         return
+
+    console.log("Closing down room:", roomId);
 
     // cancel socket room by forcing all sockets from this room to leave
     io.in(roomId).socketsLeave(roomId);

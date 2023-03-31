@@ -8,8 +8,12 @@ export default class InteractiveHandler {
          *  INFO_TEXT INTERACTION 
         */
         scene.infoText.on('pointerdown', () => {
-            scene.socket.emit('dealCards', scene.socket.id);
-            scene.infoText.disableInteractive();
+            if (scene.GameHandler.gameState === "Initialising") {
+                scene.socket.emit('dealCards', scene.socket.id);
+                scene.infoText.disableInteractive();
+            } else if (scene.GameHandler.gameState === "Over") {
+                scene.GameHandler.gameOver(scene.GameHandler.gameOutcome)
+            }
         })
 
         scene.infoText.on('pointerover', () => {
