@@ -7,6 +7,7 @@ const {Vars} = require("./vars.js");
 
 const config = {
     type: Phaser.AUTO,
+    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
     dom: {
         createContainer: true
     },

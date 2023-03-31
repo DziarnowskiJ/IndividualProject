@@ -1,0 +1,11 @@
+#gameContainer {
+    max-height: 100vw;
+}
+
+h2, h3, h4, h5, h6, p {
+    color: white;
+}
+
+.list-group-item {
+    text-align: justify;
+}
