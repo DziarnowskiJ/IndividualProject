@@ -11,7 +11,7 @@ const Room = require('./serverHelpers/Room');
 
 const io = require('socket.io')(http, {
     cors: {
-        origin: 'http://localhost:8080',
+        origin: 'https://dissertation-project.onrender.com',
         methods: ["GET", "POST"]
     }
 });

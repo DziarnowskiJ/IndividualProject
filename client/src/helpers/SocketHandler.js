@@ -4,7 +4,7 @@ const { Vars } = require('../vars.js');
 
 export default class SocketHandler {
     constructor(scene) {
-        scene.socket = io('http://localhost:3000');
+        scene.socket = io('https://dissertation-project.onrender.com');
 
         // join room on connection with the server
         scene.socket.on('connect', () => {
