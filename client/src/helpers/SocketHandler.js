@@ -59,7 +59,6 @@ export default class SocketHandler {
 
         // get new card to the hand
         scene.socket.on('dealNewCard', (socketId, newCardName, oldCardIndex) => {
-            // TODO: possibly move to deck handler
             if (socketId === scene.socket.id) {
                 scene.DeckHandler.playerHand[oldCardIndex] =
                     scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, "playerCard");
@@ -72,7 +71,6 @@ export default class SocketHandler {
         })
 
         // card was played
-        // TODO: move to deck handler (possibly)
         scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName) => {
             // opponent played a card
             if (socketId !== scene.socket.id) {

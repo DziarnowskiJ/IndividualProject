@@ -110,7 +110,6 @@ class Room {
         for (let i in this.dropZones) {
             if (!this.dropZones[i].claimed) {
                 let outcome = dropZoneHandler.checkZone(this.dropZones[i], this.cardsPlayed);
-                console.log("zone:", i, "output:", outcome);
                 if (outcome.winner) {
                     this.dropZones[i].claimed = outcome.winner;
                     newlyClaimedZones[i] = outcome.winner;

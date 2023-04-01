@@ -4,8 +4,8 @@ const shuffle = require('shuffle-array');
 const cors = require('cors');
 
 // TODO: uncomment for deployment
-// const path = require('path');
-// const serveStatic = require("serve-static");
+const path = require('path');
+const serveStatic = require("serve-static");
 
 const Room = require('./serverHelpers/Room');
 
@@ -17,8 +17,8 @@ const io = require('socket.io')(http, {
 });
 
 // TODO: uncomment for deployment
-// server.use(cors());
-// server.use(serveStatic(__dirname + "/client/dist"));
+server.use(cors());
+server.use(serveStatic(__dirname + "/client/dist"));
 
 let players = {};
 let rooms = {};
@@ -256,15 +256,15 @@ function getRoomId(socketId) {
 
 // TODO: swap for deployment
 // ---------------------------------------------
-http.listen(3000, function () {
-    // NOTE: server console log
-    console.log("Server started!");
-})
-
-// const port = process.env.PORT || 3000;
-
-// http.listen(port, function () {
+// http.listen(3000, function () {
 //     // NOTE: server console log
 //     console.log("Server started!");
 // })
+
+const port = process.env.PORT || 3000;
+
+http.listen(port, function () {
+    // NOTE: server console log
+    console.log("Server started!");
+})
 // ----------------------------------------------
