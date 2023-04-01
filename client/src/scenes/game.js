@@ -1,4 +1,3 @@
-import CardHandler from "../helpers/CardHandler";
 import DeckHandler from "../helpers/DeckHandler";
 import GameHandler from "../helpers/GameHandler"
 import InteractiveHandler from "../helpers/InteractiveHandler";
@@ -22,9 +21,9 @@ export default class Game extends Phaser.Scene {
     preload() {
         // load all 54 cards (6 domains, 9 cards each)
         let domains = ["A", "B", "C", "D", "E", "F"];
-        for (let i = 0; i < domains.length; i++ ) {
+        for (let domain of domains) {
             for (let j = 1; j <= 9; j++) {
-                this.load.image(domains[i] + j, 'src/assets/cardDeck/domain' + domains[i] + '/' + domains[i] + " (" + j + ')'+ '.png');
+                this.load.image(domain + j, 'src/assets/cardDeck/domain' + domain + '/' + domain + " (" + j + ')'+ '.png');
             }
         }
         // load backside of card
@@ -34,7 +33,6 @@ export default class Game extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
         this.MarkerHandler = new MarkerHandler(this);
-        this.CardHandler = new CardHandler();
         this.DeckHandler = new DeckHandler(this);
         this.GameHandler = new GameHandler(this);
         this.SocketHandler = new SocketHandler(this);

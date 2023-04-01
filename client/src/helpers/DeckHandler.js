@@ -9,6 +9,15 @@ export default class DeckHandler {
         this.playerHand = [];
         this.opponentHand = [];
 
+        
+        /** render a card on screen
+         * 
+         * @param {*} x x-location of card
+         * @param {*} y y-location of card
+         * @param {*} name [cardBack | cardFront] 
+         * @param {*} type type of the cards (domain and value)
+         * @returns 
+         */
         this.dealCard = (x, y, name, type) => {
             let cards = {
                 cardBack: new CardBack(scene),

@@ -29,7 +29,7 @@ export default class UIHandler {
             // PLAYER AREA
             scene.playerHandArea = scene.add.rectangle(
                 470, Vars.gameHeight - Vars.cardHeight / 2 - 30,
-                850, Vars.cardHeight + 5, 
+                Vars.cardAreaWidth, Vars.cardAreaHeight, 
                 Vars.success0, 0.2); // (x-coor, y-coor, width, height, fillColor, alpha)
             scene.playerHandArea.setStrokeStyle(4, Vars.success0); // (width, color)
             // scene.playerHandArea.fillStyle()
@@ -37,7 +37,7 @@ export default class UIHandler {
             // PLAYER DECK AREA
             scene.playerDeckArea = scene.add.rectangle(
                 1010, Vars.gameHeight - Vars.cardHeight / 2 - 30,
-                Vars.cardWidth + 5, Vars.cardHeight + 5, 
+                Vars.deckAreaWidth, Vars.deckAreaHeight, 
                 Vars.primary0, 0.2); // (x-coor, y-coor, width, height, fillColor, alpha)
             scene.playerDeckArea.setStrokeStyle(4, Vars.primary0);
             scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
@@ -45,7 +45,7 @@ export default class UIHandler {
             // OPPONENT AREA
             scene.opponentHandArea = scene.add.rectangle(
                 470, Vars.cardHeight / 2 + 30,
-                850, Vars.cardHeight + 5, 
+                Vars.cardAreaWidth, Vars.cardAreaHeight, 
                 Vars.danger0, 0.2); // (x-coor, y-coor, width, height, fillColor, alpha)
             scene.opponentHandArea.setStrokeStyle(4, Vars.danger0); // (width, color)
             
@@ -99,6 +99,11 @@ export default class UIHandler {
             this.toggleUIText("cardsLeftNumber", true);
         }
 
+        /**
+         * Builds welcome UI
+         * Depending on room type (random | new)
+         * it will show different message to the player
+         */
         this.buildWelcomeUI = () => {
             this.buidGameText();
 
@@ -110,6 +115,11 @@ export default class UIHandler {
             }
         }
 
+        /** Function that shows/hides UI text
+         * 
+         * @param {*} text text to be affected
+         * @param {*} state show text [true | false] 
+         */
         this.toggleUIText = (text, state) => {
             switch (text) {
                 case "infoText":
@@ -133,6 +143,9 @@ export default class UIHandler {
             }
         }
 
+        /**
+         * Change copyText text and center it on screen
+         */
         this.codeCopied = () => {
             scene.copyText.setText("Code copied!")
             centerText(scene.copyText);
@@ -140,6 +153,9 @@ export default class UIHandler {
     }
 }
 
+/** Centralises the text with regard to the whole game screen
+ * @param {*} text text to be centered
+ */
 function centerText(text) {
     text.x = ((Vars.gameWidth - text.width) / 2);
 }

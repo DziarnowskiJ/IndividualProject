@@ -1,73 +1,79 @@
-const Vars = {
-    /** COLORS */
-    // colors are copied from Bootstrap 5
-    // TODO: reference
+class Variables {
+    constructor() {
+        /** COLORS */
+        // colors are copied from Bootstrap 5
+        // TODO: reference
+        // color in #HEX form
+        this.primary = "#0074d9";
+        this.secondary = "#adb6bd";
+        this.danger = "#dc3545";
+        this.success = "#198754";
+        this.warning = "#ffc107";
+        this.hoverColor = "#FF00FF";
 
-    // color in #HEX form
-    primary: "#0074d9",
-    secondary: "#adb6bd",
-    danger: "#dc3545",
-    success: "#198754",
-    warning: "#ffc107",
-    hoverColor: "#FF00FF",
-    // F3F9D2
-    // E6EBE0
+        // colors in 0x form 
+        // (required for some Phaser functionality)
+        this.primary0 = 0x0074d9;
+        this.secondary0 = 0xadb6bd;
+        this.danger0 = 0xdc3545;
+        this.success0 = 0x198754;
+        this.warning0 = 0xffc107;
+        this.hoverColor0 = 0xff00ff;
 
-
-    // colors in 0x form 
-    // (required for some Phaser functionality)
-    primary0: 0x0074d9,
-    secondary0: 0xadb6bd,
-    danger0: 0xdc3545,
-    success0: 0x198754,
-    warning0: 0xffc107,
-
-    /** FONTS */
-    fontStyleLarge: {
-        align: "center",
-        fontSize: "50px",
-        fontFamily: "Trebuchet MS",
-        fill: "#0074d9"
-    }, 
-    fontStyleMedium: {
-        align: "center",
-        fontSize: "36px",
-        fontFamily: "Trebuchet MS",
-        fill: "#0074d9"
-    }, 
-    fontStyleSmall: {
-        align: "center",
-        fontSize: "26px",
-        fontFamily: "Trebuchet MS",
-        fill: "#0074d9"
-    }, 
+        /** FONTS */
+        this.fontStyleLarge = {
+            align: "center",
+            fontSize: "50px",
+            fontFamily: "Trebuchet MS",
+            fill: "#0074d9"
+        };
+        this.fontStyleMedium = {
+            align: "center",
+            fontSize: "36px",
+            fontFamily: "Trebuchet MS",
+            fill: "#0074d9"
+        };
+        this.fontStyleSmall = {
+            align: "center",
+            fontSize: "26px",
+            fontFamily: "Trebuchet MS",
+            fill: "#0074d9"
+        };
 
 
-    /** GAME CONTAINER */
-    gameWidth: 1300,
-    gameHeight: 1050,
+        /** GAME CONTAINER */
+        this.gameWidth = 1300;
+        this.gameHeight = 1050;
 
-    /** CARD */
-    cardHeight: 180,
-    cardWidth: 112.5,
-    // cardHeight: 200,
-    // cardWidth: 125,
+        /** CARD */
+        this.cardHeight = 180;
+        this.cardWidth = 112.5;
 
-    /** CARD SPRITE 
-     * (size of card when hoverd over)
-     */
-    largeCardHeight: 270,
-    largeCardWidth: 225,
+        /** CARD SPRITE
+         * (size of card when hoverd over)
+         */
+        this.largeCardHeight = 270;
+        this.largeCardWidth = 225;
 
-    /** DROPZONE 
-     */
-    dropZoneWidth: 132.5,   // cardWidth + 20
-    dropZoneHeight: 600,    // cardHeight + dropZoneCardOffset * 4 + dropZoneYOffset * 2 + 10
-    dropZoneCardOffset: 40,
-    dropZoneYOffset: 125,
+        /** DROPZONE */
+        this.dropZoneWidth = this.cardWidth + 20;
+        this.dropZoneCardOffset = 40;
+        this.dropZoneYOffset = 125;
+        this.dropZoneHeight = this.cardHeight + this.dropZoneCardOffset * 4 + this.dropZoneYOffset * 2 + 10;
 
-    /** MARKER */
-    markerWidth: 130,     // cardWidth + 10,
-    markerHeight: 62.5      // dropZoneYOffset / 2,
+        /** MARKER */
+        this.markerWidth = this.cardWidth + 17.5;
+        this.markerHeight = this.dropZoneYOffset / 2;
+
+        /** CARD AREA */
+        this.cardAreaWidth = 850;
+        this.cardAreaHeight = this.cardHeight + 5;
+
+        /** DECK AREA */
+        this.deckAreaHeight = this.cardHeight + 5;
+        this.deckAreaWidth = this.cardWidth + 5;
+    }
 };
+
+const Vars = new Variables;
 module.exports = {Vars};

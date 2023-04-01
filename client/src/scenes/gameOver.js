@@ -19,9 +19,12 @@ export default class GameOver extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
 
+        // show game over text
         var gameOverText = this.add.text(0, 300, "GAME OVER", Vars.fontStyleLarge);
         gameOverText.x = ((Vars.gameWidth - gameOverText.width) / 2);
 
+        // depending on the parameter passed during creation of this scene 
+        // ending message will show different message
         var text = this.add.text(0, 500, '', Vars.fontStyleLarge);
 
         switch (this.status) {
@@ -43,10 +46,12 @@ export default class GameOver extends Phaser.Scene {
 
         text.x = ((Vars.gameWidth - text.width) / 2);
 
+        // show playAgain message
         var playAgain = this.add.text(0, 800, "[Play Again]", Vars.fontStyleMedium);
         playAgain.x = ((Vars.gameWidth - playAgain.width) / 2);
         playAgain.setInteractive();
 
+        // INTERACTIVITY FOR PLAY AGAIN TEXT
         playAgain.on('pointerdown', () => {
             this.scene.stop();
             this.scene.start('Intro');

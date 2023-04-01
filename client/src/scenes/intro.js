@@ -10,6 +10,7 @@ export default class Intro extends Phaser.Scene {
     // happens BEFORE the game is created
     preload() {
 
+        // load html with buttons and input field
         this.load.html('introPage', './src/assets/html/intro.html');
 
     }
@@ -17,9 +18,11 @@ export default class Intro extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
 
+        // create join text message
         let joinText = this.add.text(0, 700, 'Choose type of room', Vars.fontStyleMedium);
         joinText.x = ((Vars.gameWidth - joinText.width) / 2);
 
+        // show loaded html in game
         var element = this.add.dom(Vars.gameWidth / 2, 600).createFromCache('introPage');
         element.setPerspective(600);
         element.setScale(2);
@@ -33,6 +36,7 @@ export default class Intro extends Phaser.Scene {
 
         var roomCodeInput = Phaser.DOM.GetTarget('roomCode')
 
+        // determin room type and room code depending on the button pressed
         element.on('click', function (event) {
             if (event.target.id === 'randomBtn') {
                 data.roomCode = generateString(8);
@@ -50,12 +54,14 @@ export default class Intro extends Phaser.Scene {
                 data.roomType = "join";
             }
             
-            if (data != undefined) {
+            // change text to joinn room
+            if (data.roomCode) {
                 joinText.setText("[Join room!]").setInteractive();
                 joinText.x = ((Vars.gameWidth - joinText.width) / 2);
             }
         });
 
+        // make html slide from the bottom
         this.tweens.add({
             targets: element,
             y: 400,
@@ -63,16 +69,20 @@ export default class Intro extends Phaser.Scene {
             ease: 'Power3'
         });
 
+        // INTERACTIVITY FOR joinText
         joinText.on('pointerup', () => {
             if (data.roomType === "join") {
                 let joinRoomCode = roomCodeInput.value;
                 if (joinRoomCode && joinRoomCode !== "") {
                     data.roomCode = joinRoomCode;
                 } else {
+                    // in the room code for joinRoom was not given
+                    // alert the player
                     roomCodeInput.classList.add("inputWarning");
                     roomCodeInput.placeholder = "Enter room code!";
                 }
             }
+            // switch game scene to Game
             if (data.roomCode && data.roomType) {
                 this.scene.stop();
                 this.scene.start('Game', data);
@@ -98,7 +108,7 @@ export default class Intro extends Phaser.Scene {
 
 // TODO: ADD SOURCE https://www.programiz.com/javascript/examples/generate-random-strings
 
-// program to generate random strings
+// Generate random strings
 
 // declare all characters
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

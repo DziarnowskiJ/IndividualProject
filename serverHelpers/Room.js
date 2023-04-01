@@ -16,9 +16,9 @@ class Room {
 
         // populate fullDeck
         let domains = ["A", "B", "C", "D", "E", "F"];
-        for (let i = 0; i < domains.length; i++) {
+        for (let domain of domains) {
             for (let j = 1; j <= 9; j++) {
-                this.fullDeck.push(domains[i] + j);
+                this.fullDeck.push(domain + j);
             }
         }
         // shuffle the deck
@@ -102,10 +102,7 @@ class Room {
                 currentDropZone.playerBCards.length === 3) {
                 currentDropZone.firstFinishedA = false;
             }
-        } else {
-            // NOTE: server error log
-            console.log("ERROR! --> Room.js/cardPlayed")
-        }
+        } 
     }
 
     checkZones() {

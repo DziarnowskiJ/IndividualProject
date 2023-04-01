@@ -48,9 +48,9 @@ var formationHandler = {
             cards: cards
         }
 
-        for (let i in cards) {
-            formation.value *= encode(cards[i]).codeValue;
-            formation.sum += encode(cards[i]).trueValue;
+        for (let card of cards) {
+            formation.value *= encode(card).codeValue;
+            formation.sum += encode(card).trueValue;
         }
 
         let isStraight = straightValues.includes(formation.value);
@@ -108,8 +108,8 @@ var formationHandler = {
             let isColor = cards[0].domain === cards[1].domain;
 
             let neededTowardStraight = [];
-            for (let i in straightValues) {
-                let codedValue = straightValues[i] / (cards[0].codeValue * cards[1].codeValue);
+            for (let cardValue of straightValues) {
+                let codedValue = cardValue / (cards[0].codeValue * cards[1].codeValue);
                 if (Number.isInteger(codedValue)) {
                     neededTowardStraight.push(decoder[codedValue])
                 }
@@ -124,18 +124,18 @@ var formationHandler = {
 
             // straight-flush   -> first check color, then neededTowards, then if card was played
             if (isColor && neededTowardStraight.length > 0) {
-                for (let i in neededTowardStraight) {
-                    if (!cardsPlayed.includes(cards[0].domain + neededTowardStraight[i])) {
-                        cardsNeeded.push(cards[0].domain + neededTowardStraight[i]);
+                for (let card of neededTowardStraight) {
+                    if (!cardsPlayed.includes(cards[0].domain + card)) {
+                        cardsNeeded.push(cards[0].domain + card);
                         return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
             }
             // triple           -> if neededTowardTriple != 0, check all domains and find if one wasn't played
             if (neededTowardTriple !== 0) {
-                for (let i in domains) {
-                    if (!cardsPlayed.includes(domains[i] + neededTowardTriple)) {
-                        cardsNeeded.push(domains[i] + neededTowardTriple);
+                for (let domain of domains) {
+                    if (!cardsPlayed.includes(domain + neededTowardTriple)) {
+                        cardsNeeded.push(domain + neededTowardTriple);
                         return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
@@ -151,10 +151,10 @@ var formationHandler = {
             }
             // straight         -> neededTowards in any color available
             if (neededTowardStraight.length > 0) {
-                for (let i in neededTowardStraight) {
-                    for (let j in domains) {
-                        if (!cardsPlayed.includes(domains[j] + neededTowardStraight[i])) {
-                            cardsNeeded.push(domains[j] + neededTowardStraight[i]);
+                for (let card of neededTowardStraight) {
+                    for (let domain of domains) {
+                        if (!cardsPlayed.includes(domain + card)) {
+                            cardsNeeded.push(domain + card);
                             return this.determineFormation(checkCards.concat(cardsNeeded));
                         }
                     }
@@ -162,9 +162,9 @@ var formationHandler = {
             }
             // card set         -> find highest value card not played (check all 10s, 9s, etc)
             for (let i = 9; i > 0; i--) {
-                for (let j in domains) {
-                    if (!cardsPlayed.includes(domains[j] + i)) {
-                        cardsNeeded.push(domains[j] + i);
+                for (let domain of domains) {
+                    if (!cardsPlayed.includes(domain + i)) {
+                        cardsNeeded.push(domain + i);
                         return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
                 }
@@ -200,9 +200,9 @@ var formationHandler = {
             // check if > 4 cards of this value were played
             if (cardsNeeded.length === 0) {
 
-                for (let i in domains) {
-                    if (!cardsPlayed.includes(domains[i] + card.trueValue)) {
-                        cardsNeeded.push(domains[i] + card.trueValue);
+                for (let domain of domains) {
+                    if (!cardsPlayed.includes(domain + card.trueValue)) {
+                        cardsNeeded.push(domain + card.trueValue);
                     }
                 }
 
@@ -234,12 +234,12 @@ var formationHandler = {
                 for (let i in cardsToStraight[card.trueValue]) {
                     let isOne = undefined;
                     let isTwo = undefined;
-                    for (let j in domains) {
-                        if (!cardsPlayed.includes(domains[j] + cardsToStraight[card.trueValue][i][0])) {
-                            isOne = domains[j] + cardsToStraight[card.trueValue][i][0];
+                    for (let domain of domains) {
+                        if (!cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][0])) {
+                            isOne = domain + cardsToStraight[card.trueValue][i][0];
                         }
-                        if (!cardsPlayed.includes(domains[j] + cardsToStraight[card.trueValue][i][1])) {
-                            isTwo = domains[j] + cardsToStraight[card.trueValue][i][1];
+                        if (!cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][1])) {
+                            isTwo = domain + cardsToStraight[card.trueValue][i][1];
                         }
                     }
                     if (isOne !== undefined && isTwo !== undefined) {
@@ -254,11 +254,11 @@ var formationHandler = {
                 let isOne = undefined;
                 let isTwo = undefined;
                 for (let i = 9; i > 0; i--) {
-                    for (let j in domains) {
-                        if (!cardsPlayed.includes(domains[j] + i) && isOne === undefined) {
-                            isOne = domains[j] + i;
-                        } else if (!cardsPlayed.includes(domains[j] + i) && isTwo === undefined) {
-                            isTwo = domains[j] + i;
+                    for (let domain of domains) {
+                        if (!cardsPlayed.includes(domain + i) && isOne === undefined) {
+                            isOne = domain + i;
+                        } else if (!cardsPlayed.includes(domain + i) && isTwo === undefined) {
+                            isTwo = domain + i;
                         }
                     }
                 }
@@ -272,10 +272,10 @@ var formationHandler = {
             // - straight - flush(colored sequence)
             for (let i = 9; i > 2; i--) {
                 if (checkCards.length !== 0) break;
-                for (let j in domains) {
-                    let cardA = domains[j] + i;
-                    let cardB = domains[j] + (i - 1);
-                    let cardC = domains[j] + (i - 2);
+                for (let domain of domains) {
+                    let cardA = domain + i;
+                    let cardB = domain + (i - 1);
+                    let cardC = domain + (i - 2);
 
                     if (!cardsPlayed.includes(cardA) &&
                         !cardsPlayed.includes(cardB) &&
@@ -290,9 +290,9 @@ var formationHandler = {
             // - three - of - a - kind(same value, different colors)
             for (let i = 9; i > 0; i--) {
                 if (checkCards.length === 3) break;
-                for (let j in domains) {
-                    if (!cardsPlayed.includes(domains[j] + i)) {
-                        cardsNeeded.push(domains[j] + i);
+                for (let domain of domains) {
+                    if (!cardsPlayed.includes(domain + i)) {
+                        cardsNeeded.push(domain + i);
                     }
 
                     if (cardsNeeded.length === 3) {
@@ -309,15 +309,15 @@ var formationHandler = {
                 cards: [],
                 sum: 0
             }
-            for (let i in domains) {
+            for (let domain of domains) {
                 let potentialFlush = {
                     cards: [],
                     sum: 0
                 }
                 for (let j = 9; j > 0; j--) {
                     if (potentialFlush.cards.length === 3) break;
-                    if (!cardsPlayed.includes(domains[i] + j)) {
-                        potentialFlush.cards.push(domains[i] + j);
+                    if (!cardsPlayed.includes(domain + j)) {
+                        potentialFlush.cards.push(domain + j);
                         potentialFlush.sum += j;
                     }
                 }
@@ -333,43 +333,37 @@ var formationHandler = {
             // - straight(sequenced values, different colors)
             for (let i = 9; i > 2; i--) {
                 if (checkCards.length === 3) break;
-                let cardA = undefined;
-                let cardB = undefined;
-                let cardC = undefined;
-                for (let j in domains) {
-                    if (cardA === undefined && !cardsPlayed.includes(domains[j] + i)) {
-                        cardA = domains[j] + i;
+                let cardA = null;
+                let cardB = null;
+                let cardC = null;
+                for (let domain of domains) {
+                    if (!cardA && !cardsPlayed.includes(domain + i)) {
+                        cardA = domain + i;
                     }
-                    if (cardB === undefined && !cardsPlayed.includes(domains[j] + (i - 1))) {
-                        cardB = domains[j] + (i - 1);
+                    if (!cardB && !cardsPlayed.includes(domain + (i - 1))) {
+                        cardB = domain + (i - 1);
                     }
-                    if (cardC === undefined && !cardsPlayed.includes(domains[j] + (i - 2))) {
-                        cardC = domains[j] + (i - 2);
+                    if (!cardC && !cardsPlayed.includes(domain + (i - 2))) {
+                        cardC = domain + (i - 2);
                     }
                 }
-                if (cardA !== undefined &&
-                    cardB !== undefined &&
-                    cardC !== undefined) {
+                if (!cardA && !cardB && !cardC) {
                     cardsNeeded = [cardA, cardB, cardC];
                     return this.determineFormation(cardsNeeded);
                 }
             }
             // - card set(random cards)
             for (let i = 9; i > 0; i--) {
-                for (let j in domains) {
-                    if (!cardsPlayed.includes(domains[j] + i)) {
-                        cardsNeeded.push(domains[j] + i)
+                for (let domain of domains) {
+                    if (!cardsPlayed.includes(domain + i)) {
+                        cardsNeeded.push(domain + i)
                     }
                     if (cardsNeeded.length === 3) {
                         return this.determineFormation(cardsNeeded);
                     }
                 }
             }
-
-        } else {
-            console.log("THIS --> " + checkCards.length + " --> ERROR!")
-        }
-
+        } 
     }
 }
 

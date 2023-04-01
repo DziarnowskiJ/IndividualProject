@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
 
     // player disconnects
     socket.on("disconnect", () => {
-        // NOTE: server console 
+        // NOTE: server console log
         let message = () => {if (getRoomId(socket.id)) {return "room " + getRoomId(socket.id)} else return "cancelled room"};
         console.log("Player", socket.id, "disconnected from", message());
 
@@ -163,6 +163,7 @@ io.on('connection', function (socket) {
             }
 
             // cancel room as it is no longer needed
+            // NOTE: server console log
             console.log("Game ended in room:", getRoomId(socketId));
             cancelRoom(getRoomId(socketId));
         }
@@ -186,6 +187,7 @@ function cancelRoom(roomId) {
     if (!rooms[roomId])
         return
 
+    // NOTE: server console log
     console.log("Closing down room:", roomId);
 
     // cancel socket room by forcing all sockets from this room to leave
@@ -228,9 +230,6 @@ function joinRoom(roomId, socket) {
 
     // if both players joined the room
     if (rooms[roomId].readyCheck === 2) {
-
-        console.log(players);
-
         io.sockets.in(roomId).emit('changeGameState', 'Initialising');
         io.sockets.in(roomId).emit('firstTurn', socket.id);
     }

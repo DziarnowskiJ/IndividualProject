@@ -15,17 +15,19 @@ export default class ZoneHandler {
             });
             return dropZone;
         }
-        // create drop zone outline
+        // renders dropZone graphics on screen
         this.renderOutline = (dropZone) => {
             let dropZoneOutline = scene.add.graphics();
             dropZoneOutline.lineStyle(4, Vars.warning0);
             dropZoneOutline.fillStyle(Vars.warning0, 0.2);
+            // fill the shape
             dropZoneOutline.fillRect(
                 dropZone.x - dropZone.input.hitArea.width / 2, 
                 dropZone.y - dropZone.input.hitArea.height / 2,
                 dropZone.input.hitArea.width,
                 dropZone.input.hitArea.height
             );
+            // create outline
             dropZoneOutline.strokeRect(
                 dropZone.x - dropZone.input.hitArea.width / 2, 
                 dropZone.y - dropZone.input.hitArea.height / 2,

@@ -19,6 +19,7 @@ export default class RoomError extends Phaser.Scene {
     // happens WHEN the game is created
     create() {
 
+        // create error message that will be displayed to the player
         let textContent = [
             "Sorry",
             "",
@@ -34,14 +35,18 @@ export default class RoomError extends Phaser.Scene {
                 break;
         }
 
+        // display error message
         var text = this.add.text(0, 300, textContent, Vars.fontStyleLarge)
             text.x = ((Vars.gameWidth - text.width) / 2);
 
+        // display playAgain message
         var playAgain = this.add.text(0, 800, "[Try Again]", Vars.fontStyleMedium);
         playAgain.x = ((Vars.gameWidth - playAgain.width) / 2);
         playAgain.setInteractive();
 
+        // INTERACTIVITY FOR playAgain text
         playAgain.on('pointerup', () => {
+            this.scene.stop();
             this.scene.start('Intro');
         })
 
