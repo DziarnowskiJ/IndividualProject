@@ -87,7 +87,7 @@ export default class SocketHandler {
             // player played a card
             else {
                 let oldCardIndex = scene.DeckHandler.playerHand.indexOf(cardName);
-                scene.DeckHandler.playerHand[oldCardIndex] = undefined;
+                scene.DeckHandler.playerHand[oldCardIndex] = null;
             }
         })
 

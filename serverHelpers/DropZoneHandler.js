@@ -3,12 +3,12 @@ const formationHandler = require('./FormationHandler');
 var dropZoneHandler = {
     checkZone: function (zone, cardsPlayed) {
         let outcome = {
-            winner: undefined,
+            winner: null,
             textA: "playerA's formation",
             textB: "playerB's formation"
         }
 
-        if (!zone.claimed && zone.firstFinishedA !== undefined) {
+        if (!zone.claimed && zone.firstFinishedA !== null) {
 
             let formationA;
             let formationB;

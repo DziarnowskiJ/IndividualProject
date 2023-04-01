@@ -75,7 +75,7 @@ var formationHandler = {
     },
 
     determinWinningFormation: function (formationA, formationB) {
-        let isAWinning = undefined;
+        let isAWinning = null;
 
         // Check for formationA === formationB (both type and sum are equal)
         // is not needed as according to the game rules formation that is formed 
@@ -232,8 +232,8 @@ var formationHandler = {
             // get highest possible straight
             if (cardsNeeded.length === 0) {
                 for (let i in cardsToStraight[card.trueValue]) {
-                    let isOne = undefined;
-                    let isTwo = undefined;
+                    let isOne = null;
+                    let isTwo = null;
                     for (let domain of domains) {
                         if (!cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][0])) {
                             isOne = domain + cardsToStraight[card.trueValue][i][0];
@@ -242,7 +242,7 @@ var formationHandler = {
                             isTwo = domain + cardsToStraight[card.trueValue][i][1];
                         }
                     }
-                    if (isOne !== undefined && isTwo !== undefined) {
+                    if (isOne && isTwo) {
                         cardsNeeded = [isOne, isTwo];
                         return this.determineFormation(checkCards.concat(cardsNeeded));
                     }
@@ -251,18 +251,18 @@ var formationHandler = {
             // - card set(random cards)
             // find 2 highest values of unplayed cards
             if (cardsNeeded.length === 0) {
-                let isOne = undefined;
-                let isTwo = undefined;
+                let isOne = null;
+                let isTwo = null;
                 for (let i = 9; i > 0; i--) {
                     for (let domain of domains) {
-                        if (!cardsPlayed.includes(domain + i) && isOne === undefined) {
+                        if (!cardsPlayed.includes(domain + i) && !isOne) {
                             isOne = domain + i;
-                        } else if (!cardsPlayed.includes(domain + i) && isTwo === undefined) {
+                        } else if (!cardsPlayed.includes(domain + i) && !isTwo) {
                             isTwo = domain + i;
                         }
                     }
                 }
-                if (isOne !== undefined && isTwo !== undefined) {
+                if (isOne && isTwo) {
                     cardsNeeded = [isOne, isTwo];
                     return this.determineFormation(checkCards.concat(cardsNeeded));
                 }

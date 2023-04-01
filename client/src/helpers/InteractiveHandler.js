@@ -52,7 +52,7 @@ export default class InteractiveHandler {
                     // pointer.worldX, pointer.worldY, 
                     gameObjects[0].x, gameObjects[0].y,
                     gameObjects[0].data.values.sprite).setScale(0.9);
-            } 
+            }
         })
 
         // cancel showing bigger card when player no longer hovers over it
@@ -80,6 +80,8 @@ export default class InteractiveHandler {
         scene.input.on('dragstart', (pointer, gameObject) => {
             gameObject.setTint(Vars.secondary0);
             scene.children.bringToTop(gameObject);
+            if (scene.cardPreview)
+                scene.cardPreview.setVisible(false);
         })
 
         // finish card draging
@@ -116,7 +118,7 @@ export default class InteractiveHandler {
                 scene.input.setDraggable(gameObject, false);
                 // inform server which card and where it was played
                 scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id, dropZone.name);
-            } 
+            }
             // card cannot be played -> put it back to previous position
             else {
                 gameObject.x = gameObject.input.dragStartX;
