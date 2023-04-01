@@ -155,11 +155,11 @@ io.on('connection', function (socket) {
             //  inform players who won
             if ((gameWinner === "A" && players[socketId].isPlayerA) ||
                 (gameWinner === "B" && !players[socketId].isPlayerA)) {
-                io.sockets.in(currentRoom).emit('gameOver', socketId, "won");
+                io.sockets.in(currentRoom).emit('gameOver', socketId, true);
             }
             else if ((gameWinner === "A" && !players[socketId].isPlayerA) ||
                 (gameWinner === "B" && players[socketId].isPlayerA)) {
-                io.sockets.in(currentRoom).emit('gameOver', socketId, "lost");
+                io.sockets.in(currentRoom).emit('gameOver', socketId, false);
             }
 
             // cancel room as it is no longer needed

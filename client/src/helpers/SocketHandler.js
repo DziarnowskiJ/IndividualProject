@@ -124,9 +124,11 @@ export default class SocketHandler {
                 scene.GameHandler.gameOutcome = "lost";
             }
 
+            // NOTE: client console log
+            // BUG: check impl notes
+            console.log(scene.GameHandler.gameOutcome);
             scene.infoText.setText("[Game over]");
             scene.infoText.setInteractive();
-
         })
 
         // lost connection to the server
