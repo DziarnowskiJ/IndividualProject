@@ -55,7 +55,7 @@ export default class Intro extends Phaser.Scene {
             }
             
             // change text to joinn room
-            if (data.roomCode) {
+            if (data.roomType) {
                 joinText.setText("[Join room!]").setInteractive();
                 joinText.x = ((Vars.gameWidth - joinText.width) / 2);
             }
