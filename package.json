@@ -13,7 +13,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --max_old_space_size=400 server.js --production"
+    "start": "nodemon server.js"
   },
   "author": "Jakub Dziarnowski",
   "license": "ISC"
