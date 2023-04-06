@@ -22,7 +22,7 @@ const decoder = {
     23: "9",
 }
 
-const straightValues = [30, 105, 385, 1001, 2431, 4199, 7429, 12673, 20677];
+const straightValues = [30, 105, 385, 1001, 2431, 4199, 7429];
 const tripleValues = [8, 27, 125, 343, 1331, 2197, 4913, 6859, 12167];
 const domains = ["A", "B", "C", "D", "E", "F"];
 
@@ -95,7 +95,6 @@ var formationHandler = {
         return isAWinning
     },
 
-    // isBeatable: function (checkCards) {
     predictFormation: function (checkCards, cardsPlayed) {
         let cardsNeeded = [];
 

@@ -33,7 +33,6 @@ class Room {
                 claimed: null
             }
         }
-
     }
 
     addPlayer(playerId) {
@@ -102,7 +101,7 @@ class Room {
                 currentDropZone.playerBCards.length === 3) {
                 currentDropZone.firstFinishedA = false;
             }
-        } 
+        }
     }
 
     checkZones() {
@@ -147,9 +146,29 @@ class Room {
                 return "A"
             } else if (claimedByB === 5 || adjacentThreeB === 3) {
                 return "B"
-            } 
+            }
         }
 
+        return null
+    }
+
+    isPlayerBlocked(playerId) {
+        let player = this.getPlayer(playerId);
+
+        let isBlocked = dropZoneHandler.isPlayerBlocked(this.dropZones, player.isPlayerA)
+        console.log("ROOM:", isBlocked);
+        return isBlocked
+    }
+
+    getBlockedPlayer() {
+        let isABlocked = dropZoneHandler.isPlayerBlocked(this.dropZones, true)
+        if (isABlocked)
+            return this.playerA.playerId;
+
+        let isBBlocked = dropZoneHandler.isPlayerBlocked(this.dropZones, false)
+        if (isBBlocked)
+            return this.playerB.playerId;
+        
         return null
     }
 }
