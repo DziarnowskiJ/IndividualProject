@@ -110,7 +110,6 @@ var dropZoneHandler = {
         }
 
         for (let zone in zones) {
-            console.log(zones[zone]);
             if (!zones[zone].claimed && zones[zone][player].length < 3)
                 return false
         }

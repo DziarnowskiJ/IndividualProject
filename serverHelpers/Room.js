@@ -156,7 +156,6 @@ class Room {
         let player = this.getPlayer(playerId);
 
         let isBlocked = dropZoneHandler.isPlayerBlocked(this.dropZones, player.isPlayerA)
-        console.log("ROOM:", isBlocked);
         return isBlocked
     }
 
