@@ -89,6 +89,33 @@ var dropZoneHandler = {
         }
 
         return outcome
+    },
+
+
+    /** Check whether player is blocked
+     * There can be situation when it is player's turn
+     * but the player cannot play a card 
+     * (in unclaimed zones player already played 3 cards and all other zones are claimed)
+     * @param {*} zones - all dropZones (dropZones object)
+     * @param {*} isPlayerA 
+     * @returns true if player is blocked, false otherwise
+     */
+    isPlayerBlocked: function (zones, isPlayerA) {
+        let player;
+
+        if (isPlayerA) {
+            player = "playerACards";
+        } else {
+            player = "playerBCards";
+        }
+
+        for (let zone in zones) {
+            console.log(zones[zone]);
+            if (!zones[zone].claimed && zones[zone][player].length < 3)
+                return false
+        }
+
+        return true
     }
 }
 

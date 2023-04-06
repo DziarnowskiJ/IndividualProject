@@ -27,7 +27,13 @@ export default class GameHandler {
                 scene.UIHandler.buildGameUI();
             else if (gameState === "Ready")
                 this.updateInfoText();
+            else if (gameState === "Over")
+                scene.socket.close();
+        }
 
+        /** Inform player who is blocked */
+        this.blockPlayer = (blockPlayer) => {
+            scene.UIHandler.infoTextBlock(blockPlayer);
         }
 
         /** Updates infoText to show whose turn it is */
@@ -40,7 +46,7 @@ export default class GameHandler {
             }
         }
 
-        /** Finishes the game
+        /** Finish the game
          * 
          * @param {*} state ["won" | "lost" | "disconnect"]
          */
@@ -48,6 +54,10 @@ export default class GameHandler {
             this.changeGameScene("GameOver", state);
         }
 
+        /** Switch scene to RoomError
+         * 
+         * @param {*} state data to be passed to new scene ["noRoom" | "full"]
+         */
         this.handleRoomError = (state) => {
             this.changeGameScene("RoomError", state);
         }

@@ -4,7 +4,10 @@ const { Vars } = require('../vars.js');
 
 export default class SocketHandler {
     constructor(scene) {
+        // listen on online server
         scene.socket = io('https://dissertation-project.onrender.com');
+        // listen on localhost
+        // scene.socket = io('http://localhost:3000');
 
         // join room on connection with the server
         scene.socket.on('connect', () => {
@@ -31,6 +34,11 @@ export default class SocketHandler {
         // changes the turn
         scene.socket.on('changeTurn', () => {
             scene.GameHandler.changeTurn();
+        })
+
+        // informs the player who is blocked
+        scene.socket.on("playerBlocked", (socketId) => {
+            scene.GameHandler.blockPlayer(socketId === scene.socket.id)
         })
 
         // distribute cards to the player
@@ -123,6 +131,7 @@ export default class SocketHandler {
             }
 
             scene.infoText.setText("[Game over]");
+            scene.infoText.x = 960;
             scene.infoText.setInteractive();
         })
 

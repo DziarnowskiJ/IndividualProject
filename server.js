@@ -1,9 +1,6 @@
 const server = require('express')();
 const http = require('http').createServer(server);
-const shuffle = require('shuffle-array');
 const cors = require('cors');
-
-// TODO: uncomment for deployment
 const path = require('path');
 const serveStatic = require("serve-static");
 
@@ -11,14 +8,19 @@ const Room = require('./serverHelpers/Room');
 
 const io = require('socket.io')(http, {
     cors: {
+        // listen on online server
         origin: 'https://dissertation-project.onrender.com',
+        // listen on local host
+        // origin: 'http://localhost:8080',
         methods: ["GET", "POST"]
     }
 });
 
-// TODO: uncomment for deployment
+// comment for localhost deployment
+// --------------------------------------------------
 server.use(cors());
 server.use(serveStatic(__dirname + "/client/dist"));
+// --------------------------------------------------
 
 let players = {};
 let rooms = {};
@@ -38,7 +40,7 @@ io.on('connection', function (socket) {
     // player disconnects
     socket.on("disconnect", () => {
         // NOTE: server console log
-        let message = () => {if (getRoomId(socket.id)) {return "room " + getRoomId(socket.id)} else return "cancelled room"};
+        let message = () => { if (getRoomId(socket.id)) { return "room " + getRoomId(socket.id) } else return "cancelled room" };
         console.log("Player", socket.id, "disconnected from", message());
 
         // inform other player 
@@ -149,9 +151,6 @@ io.on('connection', function (socket) {
 
         // someone won, anounce a winner
         if (gameWinner) {
-            // finish the game
-            io.sockets.in(currentRoom).emit('changeGameState', 'Over');
-
             //  inform players who won
             if ((gameWinner === "A" && players[socketId].isPlayerA) ||
                 (gameWinner === "B" && !players[socketId].isPlayerA)) {
@@ -162,6 +161,9 @@ io.on('connection', function (socket) {
                 io.sockets.in(currentRoom).emit('gameOver', socketId, false);
             }
 
+            // finish the game
+            io.sockets.in(currentRoom).emit('changeGameState', 'Over');
+
             // cancel room as it is no longer needed
             // NOTE: server console log
             console.log("Game ended in room:", getRoomId(socketId));
@@ -169,7 +171,15 @@ io.on('connection', function (socket) {
         }
         // nobody won, change turn
         else {
-            io.sockets.in(currentRoom).emit('changeTurn');
+            let blockedPlayer = rooms[currentRoom].getBlockedPlayer();
+
+            if (blockedPlayer !== socketId)
+                io.sockets.in(currentRoom).emit('changeTurn');
+
+            if (blockedPlayer) {
+                io.sockets.in(currentRoom).emit('changeTurn');
+                io.sockets.in(currentRoom).emit("playerBlocked", blockedPlayer);
+            }
         }
     })
 })
@@ -254,17 +264,8 @@ function getRoomId(socketId) {
 }
 
 
-// TODO: swap for deployment
-// ---------------------------------------------
-// http.listen(3000, function () {
-//     // NOTE: server console log
-//     console.log("Server started!");
-// })
-
 const port = process.env.PORT || 3000;
-
 http.listen(port, function () {
     // NOTE: server console log
     console.log("Server started!");
 })
-// ----------------------------------------------
