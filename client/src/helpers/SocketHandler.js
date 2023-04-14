@@ -3,7 +3,7 @@ import GameHandler from './GameHandler.js';
 const { Vars } = require('../vars.js');
 
 export default class SocketHandler {
-    constructor(scene) {
+    constructor(scene) { 
         // listen on online server
         scene.socket = io('https://dissertation-project.onrender.com');
         // listen on localhost
