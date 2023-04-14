@@ -39,21 +39,27 @@ export default class Intro extends Phaser.Scene {
         // determin room type and room code depending on the button pressed
         element.on('click', function (event) {
             if (event.target.id === 'randomBtn') {
+                setVisible(roomCodeInput, false);
+                setWarning(roomCodeInput, false);
+                
                 data.roomCode = generateString(8);
                 data.roomType = "random";
-                roomCodeInput.style.opacity = 0;
-                roomCodeInput.classList.remove("inputWarning");
             } else if (event.target.id === 'createBtn') {
+                setVisible(roomCodeInput, false);
+                setWarning(roomCodeInput, false);
+                
                 data.roomCode = generateString(8);
                 data.roomType = "new";
-                roomCodeInput.style.opacity = 0;
-                roomCodeInput.classList.remove("inputWarning");
             } else if (event.target.id === 'joinBtn') {
-                roomCodeInput.style.opacity = 1;
+                setVisible(roomCodeInput, true);
+                setWarning(roomCodeInput, false);
+                roomCodeInput.value = null;
+                roomCodeInput.placeholder = "Room code";
+                
                 data.roomCode = roomCodeInput.value;
                 data.roomType = "join";
             }
-            
+
             // change text to joinn room
             if (data.roomType) {
                 joinText.setText("[Join room!]").setInteractive();
@@ -76,9 +82,8 @@ export default class Intro extends Phaser.Scene {
                 if (joinRoomCode && joinRoomCode !== "") {
                     data.roomCode = joinRoomCode;
                 } else {
-                    // in the room code for joinRoom was not given
-                    // alert the player
-                    roomCodeInput.classList.add("inputWarning");
+                    // in the room code for joinRoom was not given alert the player
+                    setWarning(roomCodeInput, true);
                     roomCodeInput.placeholder = "Enter room code!";
                 }
             }
@@ -105,6 +110,46 @@ export default class Intro extends Phaser.Scene {
     }
 }
 
+/**
+ * Change opacity of HTML object
+ * @param {*} object HTML object
+ * @param {*} isVisible 
+ */
+function setVisible(object, isVisible) {
+    if (isVisible) {
+        object.style.opacity = 1;
+    } else {
+        object.style.opacity = 0;
+    }
+}
+
+/**
+ * Add and remove necessary classes such that the HTML 
+ * object will indicate a warning 
+ * @param {*} object HTML object 
+ * @param {*} isWarning 
+ */
+function setWarning(object, isWarning) {
+    if (isWarning) {
+        object.classList.remove("valid");
+        object.classList.remove("border-primary");
+        object.classList.remove("text-primary");
+        
+        object.classList.add("is-invalid");
+        object.classList.add("warning");
+        object.classList.add("border-danger");
+        object.classList.add("text-danger");
+    } else {
+        object.classList.remove("warning");
+        object.classList.remove("border-danger");
+        object.classList.remove("text-danger");
+        object.classList.remove("is-invalid");
+        
+        object.classList.add("valid");
+        object.classList.add("border-primary");
+        object.classList.add("text-primary");
+    }
+}
 
 // TODO: ADD SOURCE https://www.programiz.com/javascript/examples/generate-random-strings
 
