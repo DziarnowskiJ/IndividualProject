@@ -1,11 +1,10 @@
-@@ -1,271 +0,0 @@
 const server = require('express')();
 const http = require('http').createServer(server);
 const cors = require('cors');
 const path = require('path');
 const serveStatic = require("serve-static");
 
-const Room = require('./serverHelpers/Room');
+const Room = require('./helpers/Room');
 
 const io = require('socket.io')(http, {
     cors: {
