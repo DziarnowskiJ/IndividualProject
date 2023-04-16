@@ -1,5 +1,5 @@
 const { Vars } = require('../vars.js');
-export default class InteractiveHandler {
+export default class InteractivityHandler {
     constructor(scene) {
 
         scene.cardPreview = null;

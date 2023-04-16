@@ -1,6 +1,6 @@
 import DeckHandler from "../helpers/DeckHandler";
 import GameHandler from "../helpers/GameHandler"
-import InteractiveHandler from "../helpers/InteractiveHandler";
+import InteractivityHandler from "../helpers/InteractivityHandler";
 import SocketHandler from "../helpers/SocketHandler";
 import UIHandler from "../helpers/UIHandler";
 import MarkerHandler from "../helpers/MarkerHandler";
@@ -38,7 +38,7 @@ export default class Game extends Phaser.Scene {
         this.SocketHandler = new SocketHandler(this);
         this.UIHandler = new UIHandler(this);
         this.UIHandler.buildWelcomeUI();
-        this.InteractiveHandler = new InteractiveHandler(this);
+        this.InteractivityHandler = new InteractivityHandler(this);
     }
 
     // happens EVERY TICK while the game is runnning
