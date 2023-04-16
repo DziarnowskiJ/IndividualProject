@@ -19,7 +19,7 @@ const io = require('socket.io')(http, {
 // comment for localhost deployment
 // --------------------------------------------------
 server.use(cors());
-server.use(serveStatic(__dirname + "/client/dist"));
+server.use(serveStatic(__dirname + "/../client/dist"));
 // --------------------------------------------------
 
 let players = {};
