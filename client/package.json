@@ -4,7 +4,7 @@
   "description": "A Phaser 3 Project Template",
   "main": "src/index.js",
   "scripts": {
-    "test": "dir && mkdir -p dist/src/assets && cp -r src/assets dist/src/assets && cd dist/src/assets && dir",
+    "test": "dir && mkdir -p dist/src/assets && cp -r src/assets dist/src/assets && echo \"copied!\" && cd dist/src/assets && dir",
     "build": "webpack --config webpack/prod.js && mkdir -p dist\\src\\assets && cp -r src\\assets dist\\src\\assets",
     "start": "webpack-dev-server --config webpack/base.js --open"
   },
