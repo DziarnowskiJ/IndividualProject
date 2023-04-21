@@ -14,7 +14,7 @@
   "devDependencies": {},
   "scripts": {
     "dev": "nodemon server/server.js",
-    "start": "(isStatic=true || export isStatic=true || set isStatic=true) && node server/server.js"
+    "start": "(env isStatic=true || isStatic=true || export isStatic=true || set isStatic=true) && node server/server.js"
   },
   "author": "Jakub Dziarnowski",
   "license": "ISC"
