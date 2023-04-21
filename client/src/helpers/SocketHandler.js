@@ -4,10 +4,8 @@ const { Vars } = require('../vars.js');
 
 export default class SocketHandler {
     constructor(scene) { 
-        // listen on online server
-        scene.socket = io('https://dissertation-project.onrender.com');
-        // listen on localhost
-        // scene.socket = io('http://localhost:3000');
+        // listen to server
+        scene.socket = io(process.env.serverSocket);
 
         // join room on connection with the server
         scene.socket.on('connect', () => {

@@ -5,6 +5,7 @@
   "main": "server\\server.js",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "nodemon": "^2.0.21",
     "shuffle-array": "^1.0.1",
@@ -12,8 +13,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server\\server.js"
+    "dev": "(export NODE_ENV=development || set NODE_ENV=development) && nodemon server/server.js",
+    "start": "(export NODE_ENV=production|| set NODE_ENV=production) && node server/server.js"
   },
   "author": "Jakub Dziarnowski",
   "license": "ISC"
