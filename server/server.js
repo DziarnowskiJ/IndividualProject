@@ -15,9 +15,7 @@ const io = require('socket.io')(http, {
     }
 });
 
-console.log("Static?:", process.env.isStatic)
 if (process.env.isStatic) {
-    console.log("USES STATIC")
     server.use(cors());
     server.use(serveStatic(__dirname + "/../client/dist"));
 }
