@@ -1,3 +1,4 @@
+require('dotenv').config();
 const server = require('express')();
 const http = require('http').createServer(server);
 const cors = require('cors');
@@ -8,10 +9,8 @@ const Room = require('./helpers/Room');
 
 const io = require('socket.io')(http, {
     cors: {
-        // listen on online server
-        origin: 'https://dissertation-project.onrender.com',
-        // listen on local host
-        // origin: 'http://localhost:8080',
+        // listen to client
+        origin: process.env.clientSocket,
         methods: ["GET", "POST"]
     }
 });
@@ -268,4 +267,6 @@ const port = process.env.PORT || 3000;
 http.listen(port, function () {
     // NOTE: server console log
     console.log("Server started!");
+    console.log("Port:", port);
+    console.log("Listening to client from:", process.env.clientSocket);
 })
