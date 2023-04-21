@@ -38,8 +38,7 @@ module.exports = {
       template: "./index.html"
     }),
     new Dotenv({
-      path: './../etc/secrets/.env',
-      systemvars: true,
+      path: '../.env',
     })
   ]
 };
