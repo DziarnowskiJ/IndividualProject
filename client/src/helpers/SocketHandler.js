@@ -5,7 +5,6 @@ const { Vars } = require('../vars.js');
 export default class SocketHandler {
     constructor(scene) { 
         // listen to server
-        console.log("serverSocket: ", process.env.serverSocket);
         scene.socket = io(process.env.serverSocket);
 
         // join room on connection with the server

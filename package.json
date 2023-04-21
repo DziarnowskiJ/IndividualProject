@@ -13,8 +13,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "dev": "nodemon server\\server.js",
-    "start": "set isStatic=true&& nodemon server/server.js"
+    "dev": "nodemon server/server.js",
+    "start": "(export isStatic=true || set isStatic=true) && nodemon server/server.js"
   },
   "author": "Jakub Dziarnowski",
   "license": "ISC"
