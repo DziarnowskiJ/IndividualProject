@@ -15,7 +15,8 @@ const io = require('socket.io')(http, {
     }
 });
 
-if (process.env.isStatic) {
+if (process.env.NODE_ENV === "production") {
+    console.log("Server is using static files from /../client/dist")
     server.use(cors());
     server.use(serveStatic(__dirname + "/../client/dist"));
 }
