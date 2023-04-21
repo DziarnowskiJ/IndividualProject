@@ -15,11 +15,11 @@ const io = require('socket.io')(http, {
     }
 });
 
-// comment for localhost deployment
-// --------------------------------------------------
-server.use(cors());
-server.use(serveStatic(__dirname + "/../client/dist"));
-// --------------------------------------------------
+if (process.env.isStatic) {
+    console.log("USES STATIC")
+    server.use(cors());
+    server.use(serveStatic(__dirname + "/../client/dist"));
+}
 
 let players = {};
 let rooms = {};
