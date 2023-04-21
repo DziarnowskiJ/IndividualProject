@@ -22,7 +22,7 @@ Before starting the project in any mode (development or production), run `npm in
 This mode allows to modify code with live changes to the application. 
 
 In client directory run `npm start`     -- this starts webpack server that will monitor for code changes
-In root directory run `npm run dev`     -- this starts the applcation server
+In root directory run `npm run dev`     -- this starts the applcation server that will update on code changes
 
 ### `Production mode`
 This mode is intended for actual deployment purposes. It causes the server to use static files and any change to the code will be visible only after running both functions described below"
