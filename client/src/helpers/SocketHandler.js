@@ -1,11 +1,10 @@
 import io from 'socket.io-client'
-import GameHandler from './GameHandler.js';
 const { Vars } = require('../vars.js');
 
 export default class SocketHandler {
     constructor(scene) { 
         // listen to server
-        scene.socket = io(process.env.serverSocket);
+        scene.socket = io(process.env.serverSocket || "http://localhost:3000");
 
         // join room on connection with the server
         scene.socket.on('connect', () => {
@@ -70,6 +69,10 @@ export default class SocketHandler {
                     scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, "playerCard");
                 scene.DeckHandler.playerDeck.shift();
                 scene.cardsLeftNumber.setText(scene.DeckHandler.playerDeck.length);
+                // if player does not have any more cards in the deck, remove deck card
+                if (scene.DeckHandler.playerDeck.length === 0) {
+                    scene.deckCard.destroy();
+                }
             } else {
                 scene.DeckHandler.opponentHand.unshift(
                     scene.DeckHandler.dealCard(120, Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));

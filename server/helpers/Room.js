@@ -35,6 +35,11 @@ class Room {
         }
     }
 
+    /**
+     * Add player to the room
+     * @param {*} playerId socketId of the player
+     * @returns returns true if the player can join, false otherwise
+     */
     addPlayer(playerId) {
         if (this.readyCheck === 0) {
             this.playerA = {
@@ -60,6 +65,11 @@ class Room {
         return true;
     }
 
+    /**
+     * Get player
+     * @param {*} id socketId of the player
+     * @returns player object 
+     */
     getPlayer(id) {
         if (this.playerA.playerId === id) {
             return this.playerA;
@@ -68,10 +78,19 @@ class Room {
         } else return false;
     }
 
+    /**
+     * Get players
+     * @returns array of player objects in this room
+     */
     getPlayers() {
         return [this.playerA, this.playerB];
     }
 
+    /**
+     * Deals cards to the player
+     * @param {*} player - player object
+     * @returns {inHand, inDeck} - cards of the player
+     */
     dealDeck(player) {
         for (let i = 0; i < 27; i++) {
             player.inDeck.push(this.fullDeck.shift());
@@ -83,6 +102,12 @@ class Room {
         return { inHand: player.inHand, inDeck: player.inDeck };
     }
 
+    /**
+     * keep track of cards in zones on server's side
+     * @param {*} cardName 
+     * @param {*} dropZoneName 
+     * @param {*} playedByA 
+     */
     cardPlayed(cardName, dropZoneName, playedByA) {
         this.cardsPlayed.push(cardName);
 
@@ -104,6 +129,10 @@ class Room {
         }
     }
 
+    /**
+     * Checks whether any zone was just claimed 
+     * @returns newly claimed zones
+     */
     checkZones() {
         let newlyClaimedZones = {};
         for (let i in this.dropZones) {
@@ -119,6 +148,10 @@ class Room {
         return newlyClaimedZones;
     }
 
+    /**
+     * Checks whether someone won the game
+     * @returns ["A" | "B" | null]
+     */
     checkWinner() {
 
         let claimedByA = 0;
@@ -152,6 +185,11 @@ class Room {
         return null
     }
 
+    /**
+     * Sometimeds a player can be deadlocked (cannot play a card in their turn)
+     * @param {*} playerId socketId of the player to be checked
+     * @returns true if player is blocked, false otherwise
+     */
     isPlayerBlocked(playerId) {
         let player = this.getPlayer(playerId);
 
@@ -159,6 +197,10 @@ class Room {
         return isBlocked
     }
 
+    /**
+     * 
+     * @returns socketId of the blocked player, null if noone is blocked
+     */
     getBlockedPlayer() {
         let isABlocked = dropZoneHandler.isPlayerBlocked(this.dropZones, true)
         if (isABlocked)

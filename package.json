@@ -15,7 +15,8 @@
   },
   "scripts": {
     "dev": "(export NODE_ENV=development || set NODE_ENV=development) && nodemon server/server.js",
-    "start": "(export NODE_ENV=production|| set NODE_ENV=production) && node server/server.js"
+    "start": "(export NODE_ENV=production|| set NODE_ENV=production) && node server/server.js",
+    "test": "node test/DetermineFormationTest.js && node test/DetermineWinningFormationTest.js && node test/PredictFormationTest.js"
   },
   "author": "Jakub Dziarnowski",
   "license": "ISC"

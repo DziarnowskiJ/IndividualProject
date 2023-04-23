@@ -10,7 +10,7 @@ const Room = require('./helpers/Room');
 const io = require('socket.io')(http, {
     cors: {
         // listen to client
-        origin: process.env.clientSocket,
+        origin: process.env.clientSocket || "http://localhost:8080",
         methods: ["GET", "POST"]
     }
 });

@@ -40,7 +40,8 @@ export default class UIHandler {
                 Vars.deckAreaWidth, Vars.deckAreaHeight,
                 Vars.primary0, 0.2); // (x-coor, y-coor, width, height, fillColor, alpha)
             scene.playerDeckArea.setStrokeStyle(4, Vars.primary0);
-            scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
+            scene.deckCard = scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
+
 
             // OPPONENT AREA
             scene.opponentHandArea = scene.add.rectangle(

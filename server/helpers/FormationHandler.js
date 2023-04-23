@@ -40,7 +40,12 @@ function decode(encodedCard) {
 }
 
 var formationHandler = {
+    /** Determines card formation
+     * @param {*} cards - array of 3 cards 
+     * @returns formation {type, sum, value, cards}
+     */
     determineFormation: function (cards) {
+        // prepare empty formation
         let formation = {
             type: 0,
             sum: 0,
@@ -48,6 +53,7 @@ var formationHandler = {
             cards: cards
         }
 
+        // get formation's value and sum
         for (let card of cards) {
             formation.value *= encode(card).codeValue;
             formation.sum += encode(card).trueValue;
@@ -58,7 +64,7 @@ var formationHandler = {
         let isColor = (encode(cards[0]).domain === encode(cards[1]).domain
             && encode(cards[0]).domain === encode(cards[2]).domain)
 
-        // determin card formation
+        // determin card formation type
         if (isStraight && isColor) {                                // straight-flush (colored sequence)
             formation.type = 5;
         } else if (isTriple) {                                      // three-of-a-kind (same value, different colors)
@@ -74,6 +80,13 @@ var formationHandler = {
         return formation
     },
 
+    /**
+     * Compares two formations
+     * Note: formation that was created first should have its sum increased by 0.5
+     * @param {*} formationA 
+     * @param {*} formationB 
+     * @returns true if formation A is stronger, false otherwise
+     */
     determinWinningFormation: function (formationA, formationB) {
         let isAWinning = null;
 
@@ -95,17 +108,27 @@ var formationHandler = {
         return isAWinning
     },
 
+    /**
+     * Predicts strongest possible formation based on played cards
+     * @param {*} checkCards - determin formation holding these cards
+     * @param {*} cardsPlayed - used cards 
+     * @returns strongest possible formation
+     */
     predictFormation: function (checkCards, cardsPlayed) {
+        // cards required for the formation
         let cardsNeeded = [];
 
+        // 2 cards are already part of the formation, find the last one
         if (checkCards.length === 2) {
             let cards = [
                 encode(checkCards[0]),
                 encode(checkCards[1])
             ]
 
+            // check whether colored formation is possible
             let isColor = cards[0].domain === cards[1].domain;
 
+            // check whether straight is possible, if yes, add value of the needed card to array
             let neededTowardStraight = [];
             for (let cardValue of straightValues) {
                 let codedValue = cardValue / (cards[0].codeValue * cards[1].codeValue);
@@ -116,12 +139,13 @@ var formationHandler = {
             neededTowardStraight.sort();
             neededTowardStraight.reverse();
 
+            // check whether three-of-a-kind is possible
             let neededTowardTriple = 0;
             if (cards[0].trueValue === cards[1].trueValue) {
                 neededTowardTriple = cards[0].trueValue;
             }
 
-            // straight-flush   -> first check color, then neededTowards, then if card was played
+            // straight-flush
             if (isColor && neededTowardStraight.length > 0) {
                 for (let card of neededTowardStraight) {
                     if (!cardsPlayed.includes(cards[0].domain + card)) {
@@ -130,7 +154,7 @@ var formationHandler = {
                     }
                 }
             }
-            // triple           -> if neededTowardTriple != 0, check all domains and find if one wasn't played
+            // triple   
             if (neededTowardTriple !== 0) {
                 for (let domain of domains) {
                     if (!cardsPlayed.includes(domain + neededTowardTriple)) {
@@ -139,7 +163,7 @@ var formationHandler = {
                     }
                 }
             }
-            // color            -> if isColor === true, find card with highest value in color
+            // flush    
             if (isColor) {
                 for (let i = 9; i > 0; i--) {
                     if (!cardsPlayed.includes(cards[0].domain + i)) {
@@ -148,7 +172,7 @@ var formationHandler = {
                     }
                 }
             }
-            // straight         -> neededTowards in any color available
+            // straight  
             if (neededTowardStraight.length > 0) {
                 for (let card of neededTowardStraight) {
                     for (let domain of domains) {
@@ -159,7 +183,7 @@ var formationHandler = {
                     }
                 }
             }
-            // card set         -> find highest value card not played (check all 10s, 9s, etc)
+            // card set     
             for (let i = 9; i > 0; i--) {
                 for (let domain of domains) {
                     if (!cardsPlayed.includes(domain + i)) {
@@ -169,7 +193,9 @@ var formationHandler = {
                 }
             }
 
-        } else if (checkCards.length === 1) {
+        }
+        // one card is olready part of the formation, find two more cards
+        else if (checkCards.length === 1) {
             cardsToStraight = {
                 1: [[3, 2]],
                 2: [[4, 3], [3, 1]],
@@ -184,8 +210,7 @@ var formationHandler = {
 
             let card = encode(checkCards[0]);
 
-            // - straight - flush(colored sequence)
-            // get highest possible straight in color
+            // straight-flush
             for (let i in cardsToStraight[card.trueValue]) {
                 let potentialCardA = card.domain + cardsToStraight[card.trueValue][i][0];
                 let potentialCardB = card.domain + cardsToStraight[card.trueValue][i][1]
@@ -195,16 +220,13 @@ var formationHandler = {
                     return this.determineFormation(checkCards.concat(cardsNeeded));
                 }
             }
-            // - three - of - a - kind(same value, different colors)
-            // check if > 4 cards of this value were played
+            // three-of-a-kind
             if (cardsNeeded.length === 0) {
-
                 for (let domain of domains) {
                     if (!cardsPlayed.includes(domain + card.trueValue)) {
                         cardsNeeded.push(domain + card.trueValue);
                     }
                 }
-
                 if (cardsNeeded.length >= 2) {
                     cardsNeeded = cardsNeeded.slice(0, 2);
                     return this.determineFormation(checkCards.concat(cardsNeeded));
@@ -212,8 +234,7 @@ var formationHandler = {
                     cardsNeeded = [];
                 }
             }
-            // - flush(same color, different values)
-            // find 2 highest unplayed cards of this color
+            // flush
             if (cardsNeeded.length === 0) {
                 for (let i = 9; i > 0; i--) {
                     if (!cardsPlayed.includes(card.domain + i)) {
@@ -227,17 +248,16 @@ var formationHandler = {
                     cardsNeeded = [];
                 }
             }
-            // - straight(sequenced values, different colors)
-            // get highest possible straight
+            // straight
             if (cardsNeeded.length === 0) {
                 for (let i in cardsToStraight[card.trueValue]) {
                     let isOne = null;
                     let isTwo = null;
                     for (let domain of domains) {
-                        if (!cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][0])) {
+                        if (!isOne && !cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][0])) {
                             isOne = domain + cardsToStraight[card.trueValue][i][0];
                         }
-                        if (!cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][1])) {
+                        if (isOne && !isTwo && !cardsPlayed.includes(domain + cardsToStraight[card.trueValue][i][1])) {
                             isTwo = domain + cardsToStraight[card.trueValue][i][1];
                         }
                     }
@@ -247,8 +267,7 @@ var formationHandler = {
                     }
                 }
             }
-            // - card set(random cards)
-            // find 2 highest values of unplayed cards
+            // card set
             if (cardsNeeded.length === 0) {
                 let isOne = null;
                 let isTwo = null;
@@ -267,8 +286,10 @@ var formationHandler = {
                 }
             }
 
-        } else if (checkCards.length === 0) {
-            // - straight - flush(colored sequence)
+        } 
+        // no cards were played towards formation, find all three
+        else if (checkCards.length === 0) {
+            // straight-flush
             for (let i = 9; i > 2; i--) {
                 if (checkCards.length !== 0) break;
                 for (let domain of domains) {
@@ -284,26 +305,19 @@ var formationHandler = {
                     }
                 }
             }
-
-
-            // - three - of - a - kind(same value, different colors)
+            // three-of-a-kind
             for (let i = 9; i > 0; i--) {
-                if (checkCards.length === 3) break;
                 for (let domain of domains) {
                     if (!cardsPlayed.includes(domain + i)) {
                         cardsNeeded.push(domain + i);
                     }
-
                     if (cardsNeeded.length === 3) {
-                        cardsNeeded = tripleCandidate;
                         return this.determineFormation(cardsNeeded);
-                    } else {
-                        cardsNeeded = [];
                     }
                 }
+                cardsNeeded = [];
             }
-
-            // - flush(same color, different values)
+            // flush
             let highestSoFar = {
                 cards: [],
                 sum: 0
@@ -328,10 +342,8 @@ var formationHandler = {
                 cardsNeeded = highestSoFar.cards;
                 return this.determineFormation(cardsNeeded);
             }
-
-            // - straight(sequenced values, different colors)
+            // straight
             for (let i = 9; i > 2; i--) {
-                if (checkCards.length === 3) break;
                 let cardA = null;
                 let cardB = null;
                 let cardC = null;
@@ -346,12 +358,12 @@ var formationHandler = {
                         cardC = domain + (i - 2);
                     }
                 }
-                if (!cardA && !cardB && !cardC) {
+                if (cardA && cardB && cardC) {
                     cardsNeeded = [cardA, cardB, cardC];
                     return this.determineFormation(cardsNeeded);
                 }
             }
-            // - card set(random cards)
+            // card set
             for (let i = 9; i > 0; i--) {
                 for (let domain of domains) {
                     if (!cardsPlayed.includes(domain + i)) {
@@ -362,7 +374,7 @@ var formationHandler = {
                     }
                 }
             }
-        } 
+        }
     }
 }
 

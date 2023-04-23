@@ -1,6 +1,12 @@
 const formationHandler = require('./FormationHandler');
 
 var dropZoneHandler = {
+    /**
+     * Checks whether someone claimed a marker in the zone
+     * @param {*} zone zone to be checked
+     * @param {*} cardsPlayed used cards
+     * @returns outcome {winner, textA, textB}
+     */
     checkZone: function (zone, cardsPlayed) {
         let outcome = {
             winner: null,

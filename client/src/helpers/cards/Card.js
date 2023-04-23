@@ -2,13 +2,14 @@ const {Vars} = require('../../vars.js');
 
 export default class Card {
     constructor(scene) {
+        /**
+         * Render a card
+         * @param {*} x - x-coordinate
+         * @param {*} y - y-coordinate
+         * @returns card
+         */
         this.render = (x, y, type) => {
-            let sprite;
-            if (type === 'playerCard') {
-                sprite = this.playerCardSprite;
-            } else {
-                sprite = this.opponentCardSprite;
-            }
+            let sprite = this.cardSprite;
 
             let card = scene.add.image(x, y, sprite);
             card.setInteractive();
