@@ -1,7 +1,6 @@
 import CardBack from './cards/CardBack';
 import CardFront from './cards/CardFront';
 
-
 export default class DeckHandler {
     constructor(scene) {
         this.playerDeck = [];
@@ -9,7 +8,6 @@ export default class DeckHandler {
         this.playerHand = [];
         this.opponentHand = [];
 
-        
         /** render a card on screen
          * 
          * @param {*} x x-location of card
@@ -19,15 +17,11 @@ export default class DeckHandler {
          * @returns 
          */
         this.dealCard = (x, y, name, type) => {
-            let cards = {
-                cardBack: new CardBack(scene),
-                cardFront: new CardFront(scene, name),
-            }
             let newCard;
             if (name === "cardBack") {
-                newCard = cards["cardBack"];
+                newCard = new CardBack(scene);
             } else {
-                newCard = cards["cardFront"];
+                newCard = new CardFront(scene, name);
             }
             return (newCard.render(x, y, type));
         }

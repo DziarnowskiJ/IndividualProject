@@ -1,8 +1,23 @@
+/* 
+Credit where credit is due
+
+The following code was inspierd by project developed by sominator,
+`phaser-2d-multiplayer-2021-update`, particulary InteractiveHandler class. 
+available at: https://github.com/sominator/phaser-2d-multiplayer-2021-update/blob/main/client/src/helpers/InteractiveHandler.js
+
+Methods in CARD INTERACTION section are almost a direct copy, following changes were made:
+- scene.input.on('drop', (pointer, gameObject, dropZone) 
+    --> there are additional conditions that are required to drop a card
+    --> coordinates of the card are 'swapped', y value changes depending on the number of cards instead of the x as it was in sominator's project
+- scene.input.on('pointerover', (event, gameObjects)
+    --> cardPreview shows in the middle of the original card instead of the pointer's location
+- scene.input.on('drag', (pointer, gameObject, dragX, dragY)
+    --> cardPreview is removed when drag happens to suport touch screen users
+*/
+
 const { Vars } = require('../vars.js');
 export default class InteractivityHandler {
     constructor(scene) {
-
-        scene.cardPreview = null;
 
         /**
          *  INFO_TEXT INTERACTION 
@@ -44,6 +59,7 @@ export default class InteractivityHandler {
         /** 
          * CARD INTERACTION 
         */
+        scene.cardPreview = null;
 
         // show bigger version of the card when player hvers over it
         scene.input.on('pointerover', (event, gameObjects) => {
@@ -51,6 +67,7 @@ export default class InteractivityHandler {
                 scene.cardPreview = scene.add.image(
                     // pointer.worldX, pointer.worldY, 
                     gameObjects[0].x, gameObjects[0].y,
+                    // scale of the image
                     gameObjects[0].data.values.sprite).setScale(0.9);
             }
         })

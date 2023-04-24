@@ -1,3 +1,14 @@
+/* 
+Credit where credit is due
+
+Almost the whole code comes from Phaser Webpack Template developed by photonstorm
+Precisely from base.js file
+available at: https://github.com/photonstorm/phaser3-project-template/blob/master/webpack/base.js
+
+From the original version it differs by additional plugin - Dotenv
+and devServer configuration
+*/
+
 const Dotenv = require('dotenv-webpack');
 const webpack = require("webpack");
 const path = require("path");

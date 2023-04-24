@@ -1,4 +1,18 @@
-const {Vars} = require('../../vars.js');
+/* 
+Credit where credit is due
+
+The following code was inspierd by project developed by sominator,
+`phaser-2d-multiplayer-2021-update`, particulary Card class. 
+available at: https://github.com/sominator/phaser-2d-multiplayer-2021-update/blob/main/client/src/helpers/cards/Card.js
+
+This class is almost exactly the same, differences
+- simplified sprite variable
+    --> in sominator's project based on card type the sprite takes different values
+        here it is always this.cardSprite
+- card internal variables (displlayWidth, width, displayHeght, height) are set
+*/
+
+const { Vars } = require('../../vars.js');
 
 export default class Card {
     constructor(scene) {
@@ -21,9 +35,9 @@ export default class Card {
 
             card.displayWidth = Vars.cardWidth;
             card.displayHeight = Vars.cardHeight;
-            card.height = Vars.cardWidth;
-            card.width = Vars.cardHeight;
-            
+            card.height = Vars.cardHeight;
+            card.width = Vars.cardWidth;
+
             if (type === "playerCard") {
                 scene.input.setDraggable(card);
             }

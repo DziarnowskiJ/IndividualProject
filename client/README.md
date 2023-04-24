@@ -1,3 +1,8 @@
+# Individual project
+For the description of the project refer to the README.md file located in the root directory.
+
+Below is the README for the Phaser 3 Webpack Project Template available [here](https://github.com/photonstorm/phaser3-project-template).
+
 # Phaser 3 Webpack Project Template
 
 A Phaser 3 project template with ES6 support via [Babel 7](https://babeljs.io/) and [Webpack 4](https://webpack.js.org/) that includes hot-reloading for development and production-ready builds.

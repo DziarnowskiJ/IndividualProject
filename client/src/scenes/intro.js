@@ -1,3 +1,13 @@
+/* 
+Credit where credit is due
+
+Method generateString comes from article "JavaScript Program to Generate Random String" form Programiz
+available at: https://www.programiz.com/javascript/examples/generate-random-strings
+
+It was slightly modified - few charactes were removed from the characters variable
+in order to prevent user's confusion over similar characters
+*/
+
 var { Vars } = require("../vars.js")
 
 export default class Intro extends Phaser.Scene {
@@ -41,13 +51,13 @@ export default class Intro extends Phaser.Scene {
             if (event.target.id === 'randomBtn') {
                 setVisible(roomCodeInput, false);
                 setWarning(roomCodeInput, false);
-                
+
                 data.roomCode = generateString(8);
                 data.roomType = "random";
             } else if (event.target.id === 'createBtn') {
                 setVisible(roomCodeInput, false);
                 setWarning(roomCodeInput, false);
-                
+
                 data.roomCode = generateString(8);
                 data.roomType = "new";
             } else if (event.target.id === 'joinBtn') {
@@ -55,7 +65,7 @@ export default class Intro extends Phaser.Scene {
                 setWarning(roomCodeInput, false);
                 roomCodeInput.value = null;
                 roomCodeInput.placeholder = "Room code";
-                
+
                 data.roomCode = roomCodeInput.value;
                 data.roomType = "join";
             }
@@ -134,7 +144,7 @@ function setWarning(object, isWarning) {
         object.classList.remove("valid");
         object.classList.remove("border-primary");
         object.classList.remove("text-primary");
-        
+
         object.classList.add("is-invalid");
         object.classList.add("warning");
         object.classList.add("border-danger");
@@ -144,19 +154,19 @@ function setWarning(object, isWarning) {
         object.classList.remove("border-danger");
         object.classList.remove("text-danger");
         object.classList.remove("is-invalid");
-        
+
         object.classList.add("valid");
         object.classList.add("border-primary");
         object.classList.add("text-primary");
     }
 }
 
-// TODO: ADD SOURCE https://www.programiz.com/javascript/examples/generate-random-strings
-
 // Generate random strings
 
 // declare all characters
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz123456789';
+// Note: Characters 'O', '0', 'I' and 'l' were intentionally removed
+// because they migh be hard to differentiate depending on the font type
 
 function generateString(length) {
     let result = '';

@@ -1,3 +1,24 @@
+/* 
+Credit where credit is due
+
+The following code was inspierd by project developed by sominator,
+`phaser-2d-multiplayer-2021-update`, particulary UIHandler class. 
+available at: https://github.com/sominator/phaser-2d-multiplayer-2021-update/blob/main/client/src/helpers/UIHandler.js
+
+The method of executing the code was copied from the sominator's project. 
+First the separate methods are created for rendering specific parts of the UI and 
+then one method combines them together.
+Additioanlly, 3 methods are almost a direct copy:
+- this.buildZones
+    --> this project creates 9 zones instead of 1, but the core of the method is similar
+- this.buildPlayerAreas
+    --> in this project opponentDeckArea was removed
+    --> cardBack is rendered on playerDeckArea
+    --> all card areas are filled with color, which is not the case in sominator's project
+- this.buildGameUI (in sominator's project this.buildUI)
+    --> contains additional function that toggle or untoggle game text 
+*/
+
 import ZoneHandler from "./ZoneHandler";
 const { Vars } = require('../vars.js');
 
@@ -41,7 +62,6 @@ export default class UIHandler {
                 Vars.primary0, 0.2); // (x-coor, y-coor, width, height, fillColor, alpha)
             scene.playerDeckArea.setStrokeStyle(4, Vars.primary0);
             scene.deckCard = scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
-
 
             // OPPONENT AREA
             scene.opponentHandArea = scene.add.rectangle(

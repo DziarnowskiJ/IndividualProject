@@ -1,3 +1,14 @@
+/* 
+Credit where credit is due
+
+The following code was inspierd by project developed by sominator,
+`phaser-2d-multiplayer-2021-update`, particulary ZoneHandler class. 
+available at: https://github.com/sominator/phaser-2d-multiplayer-2021-update/blob/main/client/src/helpers/ZoneHandler.js
+
+Original code creates a dropZone  and renders its outline.
+This one extends it by adding more data to the dropZone and filling the shape with color
+*/
+
 const {Vars} = require('../vars.js');
 
 export default class ZoneHandler {

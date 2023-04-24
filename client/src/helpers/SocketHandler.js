@@ -1,3 +1,23 @@
+/* 
+Credit where credit is due
+
+The following code was inspierd by project developed by sominator,
+`phaser-2d-multiplayer-2021-update`, particulary SocketHandler class. 
+available at: https://github.com/sominator/phaser-2d-multiplayer-2021-update/blob/main/client/src/helpers/SocketHandler.js
+
+Following methods are similar to the sominator's project
+- scene.socket.on('changeGameState', (gameState) => {....})
+    --> this method is simpified as it only passes information to the client
+- scene.socket.on('changeTurn', () => {...})
+    --> it is exactly the same
+- scene.socket.on('dealCards', (socketId, inHand, inDeck) => {...})
+    --> in this project methood has additional functionality, 
+        but the core similar as it also gives the player specified cards or renders the back side of them
+- scene.socket.on('cardPlayed', (cardName, socketId, dropZoneName) => {...})
+    --> method has one more parameter (dropZoneName) which specifies to which zone the card was played
+    --> additioanlly it handles the case where the player playes the card
+*/
+
 import io from 'socket.io-client'
 const { Vars } = require('../vars.js');
 

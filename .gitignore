@@ -1,4 +1,21 @@
+# Node
 *node_modules
-.env
+
+# System and IDE files
+Thumbs.db
+.DS_Store
+.idea
+*.suo
+*.sublime-project
+*.sublime-workspace
 .vscode
+
+# Build
+dist/
+/npm-debug.log
+
+# Other files
 others/
+
+# Env
+.env

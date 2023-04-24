@@ -1,3 +1,11 @@
+/* 
+Credit where credit is due
+
+The whole code comes from Phaser Webpack Template developed by photonstorm
+precisely from prod.js file
+available at: https://github.com/photonstorm/phaser3-project-template/blob/master/webpack/prod.js
+*/
+
 const merge = require("webpack-merge");
 const path = require("path");
 const base = require("./base");

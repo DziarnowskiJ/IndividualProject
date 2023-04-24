@@ -1,8 +1,13 @@
+/* 
+Credit where credit is due
+
+Values for all of the color variables (except hoverColor) comes from Bootsrap 5
+available at: https://getbootstrap.com/docs/5.3/customize/color/#theme-colors
+*/
+
 class Variables {
     constructor() {
         /** COLORS */
-        // colors are copied from Bootstrap 5
-        // TODO: reference
         // color in #HEX form
         this.primary = "#0074d9";
         this.secondary = "#adb6bd";
@@ -25,19 +30,19 @@ class Variables {
             align: "center",
             fontSize: "50px",
             fontFamily: "Trebuchet MS",
-            fill: "#0074d9"
+            fill: this.primary
         };
         this.fontStyleMedium = {
             align: "center",
             fontSize: "36px",
             fontFamily: "Trebuchet MS",
-            fill: "#0074d9"
+            fill: this.primary
         };
         this.fontStyleSmall = {
             align: "center",
             fontSize: "26px",
             fontFamily: "Trebuchet MS",
-            fill: "#0074d9"
+            fill: this.primary
         };
 
 

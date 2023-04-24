@@ -1,3 +1,14 @@
+/* 
+Credit where credit is due
+
+The following code was inspierd by project developed by sominator,
+`phaser-2d-multiplayer-2021-update`, particulary game.js file. 
+available at: https://github.com/sominator/phaser-2d-multiplayer-2021-update/blob/main/client/src/scenes/game.js
+
+Method create() is almost exactly the same, 
+it differes only by creation of additional handler (MarkerHandler)
+*/
+
 import DeckHandler from "../helpers/DeckHandler";
 import GameHandler from "../helpers/GameHandler"
 import InteractivityHandler from "../helpers/InteractivityHandler";
