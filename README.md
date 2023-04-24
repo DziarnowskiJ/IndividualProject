@@ -72,9 +72,10 @@ In the project there are 3 major packages:
     - helpers - hendlers responisble for specific parts of the game
     - scenes - containers for specific parts of the game (game screens)
     - webpack - files required to make the application accessible in web browser
+    - index.html - main client's file
  - server - holds server-side code
     - helpers - handlers for specific parts of the server
-    - server.js - application server
+    - server.js - main server's file
  - test - holds automated tests for the project
 
 File structure for the project is presented below.
