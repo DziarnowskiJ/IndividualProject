@@ -48,6 +48,7 @@ To open the application, in web browser access URL for serverSocket (default htt
 
 ## `Testing`
 To ensure the proper behaviour of a major functionality of the application which is automatic marker claim test scripts were developed. To perform these tests run `npm test` in root directory.
+Other funtionality of the application can be tested visually by openinig it in two windows by simulating connection of two clients.
 
 ## `Credit where credit is due`
 All of the code that was either inspired by or copied is referenced at the top of the file in which it was used. 
