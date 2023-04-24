@@ -128,6 +128,3 @@ assert.deepStrictEqual(
 
 // ALL TEST PASSED!
 console.log("All determine-formation tests passed!")
-
-
-

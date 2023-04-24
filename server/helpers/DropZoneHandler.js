@@ -124,5 +124,4 @@ var dropZoneHandler = {
     }
 }
 
-
 module.exports = dropZoneHandler;

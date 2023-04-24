@@ -19,5 +19,9 @@
     "test": "node test/DetermineFormationTest.js && node test/DetermineWinningFormationTest.js && node test/PredictFormationTest.js"
   },
   "author": "Jakub Dziarnowski",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DziarnowskiJ/IndividualProject"
+  }
 }
