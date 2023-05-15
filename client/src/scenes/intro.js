@@ -41,7 +41,8 @@ export default class Intro extends Phaser.Scene {
 
         let data = {
             roomCode: null,
-            roomType: null
+            roomType: null,
+            deckType: "normal"
         };
 
         var roomCodeInput = Phaser.DOM.GetTarget('roomCode')
@@ -116,7 +117,17 @@ export default class Intro extends Phaser.Scene {
 
     // happens EVERY TICK while the game is runnning
     update() {
-
+        // NOTE: comment before actual deployment
+        // instantly connect to random room
+        // !!! only for dev
+        // !!! only for two clients
+        // let data = {
+        //     roomCode: 1,
+        //     roomType: "random",
+        //     deckType: "normal"
+        // };
+        // this.scene.stop();
+        // this.scene.start("Game", data);
     }
 }
 

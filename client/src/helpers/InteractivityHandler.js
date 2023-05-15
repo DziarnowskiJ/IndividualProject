@@ -15,6 +15,8 @@ Methods in CARD INTERACTION section are almost a direct copy, following changes 
     --> cardPreview is removed when drag happens to suport touch screen users
 */
 
+import Card from './Card.js';
+
 const { Vars } = require('../vars.js');
 export default class InteractivityHandler {
     constructor(scene) {
@@ -37,6 +39,21 @@ export default class InteractivityHandler {
 
         scene.infoText.on('pointerout', () => {
             scene.infoText.setColor(Vars.primary);
+        })
+
+        /** 
+         * CHANGE CARD GRAPHICS INTERACTIONS
+        */
+        scene.changeCards.on('pointerdown', () => {
+            scene.DeckHandler.changeCardGraphics();
+        })
+
+        scene.changeCards.on('pointerover', () => {
+            scene.changeCards.setColor(Vars.hoverColor);
+        })
+
+        scene.changeCards.on('pointerout', () => {
+            scene.changeCards.setColor(Vars.primary);
         })
 
         /**
@@ -63,18 +80,19 @@ export default class InteractivityHandler {
 
         // show bigger version of the card when player hvers over it
         scene.input.on('pointerover', (event, gameObjects) => {
-            if (gameObjects[0].type === 'Image' && gameObjects[0].data.list.name !== 'cardBack') {
+            if (gameObjects[0] instanceof Card && gameObjects[0].name !== 'back') {
+                console.log(scene.deckType + gameObjects[0].name);
                 scene.cardPreview = scene.add.image(
                     // pointer.worldX, pointer.worldY, 
                     gameObjects[0].x, gameObjects[0].y,
                     // scale of the image
-                    gameObjects[0].data.values.sprite).setScale(0.9);
+                    scene.deckType + gameObjects[0].name).setScale(0.9);
             }
         })
 
         // cancel showing bigger card when player no longer hovers over it
         scene.input.on('pointerout', (event, gameObjects) => {
-            if (gameObjects[0].type === 'Image' && gameObjects[0].data.list.name !== 'cardBack') {
+            if (gameObjects[0] instanceof Card && gameObjects[0].name !== 'back') {
                 scene.cardPreview.setVisible(false);
             }
         })
@@ -134,7 +152,7 @@ export default class InteractivityHandler {
                 // lock the card in place (prevent dragging it again)
                 scene.input.setDraggable(gameObject, false);
                 // inform server which card and where it was played
-                scene.socket.emit('cardPlayed', gameObject.data.values.name, scene.socket.id, dropZone.name);
+                scene.socket.emit('cardPlayed', gameObject.name, scene.socket.id, dropZone.name);
             }
             // card cannot be played -> put it back to previous position
             else {

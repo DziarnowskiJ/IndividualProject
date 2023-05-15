@@ -69,7 +69,7 @@ export default class SocketHandler {
                 // render player's cards
                 for (let i = 0; i < inHand.length; i++) {
                     let card = scene.DeckHandler.playerHand.push(
-                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, inHand[i], "playerCard"));
+                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, inHand[i], true));
                 }
 
                 scene.cardsLeftNumber.setText(scene.DeckHandler.playerDeck.length);
@@ -77,7 +77,7 @@ export default class SocketHandler {
                 // render opponent's cards
                 for (let i in inHand) {
                     let card = scene.DeckHandler.opponentHand.push(
-                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
+                        scene.DeckHandler.dealCard(120 + (i * 140), Vars.cardHeight / 2 + 30, "cardBack", false));
                 }
             }
         })
@@ -86,7 +86,7 @@ export default class SocketHandler {
         scene.socket.on('dealNewCard', (socketId, newCardName, oldCardIndex) => {
             if (socketId === scene.socket.id) {
                 scene.DeckHandler.playerHand[oldCardIndex] =
-                    scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, "playerCard");
+                    scene.DeckHandler.dealCard(120 + (oldCardIndex * 140), Vars.gameHeight - Vars.cardHeight / 2 - 30, newCardName, true);
                 scene.DeckHandler.playerDeck.shift();
                 scene.cardsLeftNumber.setText(scene.DeckHandler.playerDeck.length);
                 // if player does not have any more cards in the deck, remove deck card
@@ -95,7 +95,7 @@ export default class SocketHandler {
                 }
             } else {
                 scene.DeckHandler.opponentHand.unshift(
-                    scene.DeckHandler.dealCard(120, Vars.cardHeight / 2 + 30, "cardBack", "opponentCard"));
+                    scene.DeckHandler.dealCard(120, Vars.cardHeight / 2 + 30, "cardBack", false));
             }
         })
 
@@ -108,7 +108,8 @@ export default class SocketHandler {
                 scene.DeckHandler.dealCard(
                     currentZone.x,
                     ((currentZone.y - Vars.dropZoneYOffset) - (Vars.dropZoneCardOffset * currentZone.data.values.opponentCards)),
-                    cardName, "opponentCard");
+                    cardName, 
+                    false);
                 currentZone.data.values.opponentCards++;
             }
             // player played a card

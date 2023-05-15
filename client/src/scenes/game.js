@@ -26,6 +26,7 @@ export default class Game extends Phaser.Scene {
     init(data) {
         this.roomCode = data.roomCode;
         this.roomType = data.roomType;
+        this.deckType = data.deckType;
     }
 
     // happens BEFORE the game is created
@@ -34,11 +35,22 @@ export default class Game extends Phaser.Scene {
         let domains = ["A", "B", "C", "D", "E", "F"];
         for (let domain of domains) {
             for (let j = 1; j <= 9; j++) {
-                this.load.image(domain + j, 'src/assets/cardDeck/domain' + domain + '/' + domain + " (" + j + ')'+ '.png');
+                // this.load.image(domain + j, 'src/assets/myDeck/domain' + domain + '/' + domain + " (" + j + ')'+ '.png');
+                this.load.image("normal" + domain + j, 'src/assets/cardDeck/domain' + domain + '/' + domain + " (" + j + ')' + '.png');
             }
         }
         // load backside of card
-        this.load.image('back', 'src/assets/cardDeck/backside.png');
+        // this.load.image('back', 'src/assets/myDeck/backside.png');
+        this.load.image('normalback', 'src/assets/cardDeck/backside.png');
+
+        // load all 54 cards (6 domains, 9 cards each)
+        for (let domain of domains) {
+            for (let j = 1; j <= 9; j++) {
+                this.load.image("my" + domain + j, 'src/assets/myDeck/domain' + domain + '/' + domain + " (" + j + ')' + '.png');
+            }
+        }
+        // load backside of card
+        this.load.image('myback', 'src/assets/myDeck/backside.png');
     }
 
     // happens WHEN the game is created
@@ -54,6 +66,5 @@ export default class Game extends Phaser.Scene {
 
     // happens EVERY TICK while the game is runnning
     update() {
-       
     }
 }

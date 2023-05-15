@@ -20,6 +20,7 @@ Additioanlly, 3 methods are almost a direct copy:
 */
 
 import ZoneHandler from "./ZoneHandler";
+import Card from "./Card";
 const { Vars } = require('../vars.js');
 
 export default class UIHandler {
@@ -61,7 +62,9 @@ export default class UIHandler {
                 Vars.deckAreaWidth, Vars.deckAreaHeight,
                 Vars.primary0, 0.2); // (x-coor, y-coor, width, height, fillColor, alpha)
             scene.playerDeckArea.setStrokeStyle(4, Vars.primary0);
-            scene.deckCard = scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", "playerCard").disableInteractive();
+            scene.deckCard = scene.DeckHandler.dealCard(1010, Vars.gameHeight - Vars.cardHeight / 2 - 30, "cardBack", false).disableInteractive();
+
+            scene.myCard = new Card(scene, 800, Vars.gameHeight - Vars.cardHeight / 2 - 30, "A1");
 
             // OPPONENT AREA
             scene.opponentHandArea = scene.add.rectangle(
@@ -74,6 +77,11 @@ export default class UIHandler {
 
         // Create text for UI
         this.buidGameText = () => {
+
+            // Text changing the graphics of the cards
+            scene.changeCards = scene.add.text(960, Vars.cardHeight, "[Swap card graphics]", Vars.fontStyleSmall);
+            scene.changeCards.setVisible(false);
+            scene.changeCards.setInteractive()
 
             // Text starting the game
             // later it indicates whose turn it is 
@@ -118,6 +126,8 @@ export default class UIHandler {
             this.toggleUIText("infoText", true);
             this.toggleUIText("cardsLeftText", true);
             this.toggleUIText("cardsLeftNumber", true);
+
+            this.toggleUIText("changeCards", true)            
         }
 
         /**
@@ -142,26 +152,7 @@ export default class UIHandler {
          * @param {*} state show text [true | false] 
          */
         this.toggleUIText = (text, state) => {
-            switch (text) {
-                case "infoText":
-                    scene.infoText.setVisible(state);
-                    break;
-                case "randomRoomText":
-                    scene.randomRoomText.setVisible(state);
-                    break;
-                case "roomCodeText":
-                    scene.roomCodeText.setVisible(state);
-                    break;
-                case "copyText":
-                    scene.copyText.setVisible(state);
-                    break;
-                case "cardsLeftText":
-                    scene.cardsLeftText.setVisible(state);
-                    break;
-                case "cardsLeftNumber":
-                    scene.cardsLeftNumber.setVisible(state);
-                    break;
-            }
+            scene[text].setVisible(state);
         }
 
         /**
